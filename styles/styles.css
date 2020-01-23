@@ -179,3 +179,19 @@ legend, button::-moz-focus-inner, input::-moz-focus-inner {
   clip: rect(0 0 0);
   overflow: hidden;
 }
+
+.wrapper {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.tile {
+  width: 100%;
+  padding-bottom: 100%;
+  background: black;
+}
+
+.game {
+  display: grid;
+  grid-template-columns: repeat(28, 1fr);
+}
