@@ -2,9 +2,41 @@
     width: 100%;
     padding-bottom: 100%;
     background: black;
+    &.wall {
+        background: blue;
+    }
+    &.food {
+        position: relative;
+        &::before {
+            content:'';
+            background: white;
+            position: absolute;
+            width: 25%;
+            height: 25%;
+            border-radius: 50%;
+            top: calc(50% - 25% / 2);
+            left: calc(50% - 25% / 2);
+        }
+    }
+    &.power {
+        position: relative;
+        &::before {
+            content:'';
+            background: white;
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            border-radius: 50%;
+            top: calc(50% - 60% / 2);
+            left: calc(50% - 60% / 2);
+        }
+    }
 }
 
 .game {
     display: grid;
     grid-template-columns: repeat(28, 1fr);
+    height: 80vh;
+    width: calc((28 * 80vh / 31));
+    margin: 0 auto;
 }
