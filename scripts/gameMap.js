@@ -92,14 +92,15 @@ const gameMap = {
     },
 
     tileIndex(column,row) {
-        column = column % this.dimensions[0];
-        row = row % this.dimensions[1];
+        // Force to be within the map, and integers
+        column = Math.round(column) % this.dimensions[0];
+        row = Math.round(row) % this.dimensions[1];
         return row * this.dimensions[0] + column;
     },
 
     // Check if a tile on the map is passable
     checkCollision(column,row) {
-        const index = tileIndex(column, row);
+        const index = this.tileIndex(column, row);
         if (index >= 0 && index < this.tiles.length) {
             return  this.tiles[index].isPassable();
         }
@@ -110,7 +111,7 @@ const gameMap = {
 
     // Take contents
     takeContents(column,row) {
-        const index = tileIndex(column, row);
+        const index = this.tileIndex(column, row);
         if (index >= 0 && index < this.tiles.length) {
             return  this.tiles[index].takeContents();
         }
