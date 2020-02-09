@@ -107,7 +107,6 @@ const gameMap = {
     tileIndex(column,row) {
         // Force to be within the map, and integers
         [column, row] = this.keepOnMap([Math.round(column),Math.round(row)]);
-        console.log(column, row);
         return row * this.dimensions[0] + column;
     },
 

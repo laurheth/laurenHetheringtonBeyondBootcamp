@@ -1,6 +1,6 @@
 // code generic to characters
 class character {
-    constructor(mapReference, startColumn, startRow) {
+    constructor(mapReference, startColumn, startRow, timeInterval) {
         this.mapReference = mapReference; // reference to the game map object; we will need to use it a lot
 
         // Create dom element for the character
@@ -12,6 +12,13 @@ class character {
 
         // Move to start position
         this.moveTo(startColumn, startRow);
+
+        // initial direction, no movement
+        this.currentDirection = [0,0];
+
+        // set stepsize based on time interval
+        // assumes 1 tile per second as a starting default
+        this.stepSize = timeInterval;
     }
 
     // Method to move a character to a specific location.
@@ -25,7 +32,9 @@ class character {
 
     // Method to step in a direction. Includes checks for obstacles
     // Returns true on a successful step, and false on an unsuccessful or incomplete step.
-    step(direction, stepSize) {
+    step() {
+        const direction = this.currentDirection;
+        const stepSize = this.stepSize;
         // check if the current position is even valid. If it's not, honestly, just let the step happen, something is fucked up. Let 👏 them 👏 be 👏 free!
         if (!this.mapReference.checkCollision(this.column,this.row)) {
             this.moveTo(this.column + direction[0]*stepSize, this.row + direction[1]*stepSize);
@@ -43,12 +52,24 @@ class character {
             return true;
         }
         else {
-            // if it doesn't work, bump to middle of cell and return false
-            this.moveTo(Math.round(this.column), Math.round(this.row));
+            // if it doesn't work, bump to middle of cell along the axes of motion and return false
+            const newPosition = [this.column, this.row];
+            direction.forEach((axis,index) => {
+                if (axis !== 0) {
+                    newPosition[index] = Math.round(newPosition[index]);
+                }
+            });
+            this.moveTo(newPosition[0], newPosition[1]);
             return false;
         }
     }
 
+    doUpdate() {
+        // if any of the directions are non-zero
+        if (this.currentDirection.some((axis)=>axis)) {
+            this.step();
+        }
+    }
 }
 
 export default character;
