@@ -50,6 +50,7 @@ class tile {
 }
 
 const gameMap = {
+    // columns, rows => x,y
     dimensions: [28, 31],
     totalTiles: 0,
     gameBoard: null,
@@ -91,22 +92,29 @@ const gameMap = {
         }
     },
 
+    // Take a position and force it to be within the map
+    keepOnMap(position) {
+        const correctPosition = position.map((coordinate,index) => {
+            // the size of the map along the current axis being worried about
+            const axisSize = this.dimensions[index];
+            // Weird modulo shenanigans to ensure positive results.
+            // JavaScript modulo gives negative values for negative numbers, which, I have opinions about.
+            return (coordinate % axisSize + axisSize) % axisSize;
+        });
+        return correctPosition;
+    },
+
     tileIndex(column,row) {
         // Force to be within the map, and integers
-        column = Math.round(column) % this.dimensions[0];
-        row = Math.round(row) % this.dimensions[1];
+        [column, row] = this.keepOnMap([Math.round(column),Math.round(row)]);
+        console.log(column, row);
         return row * this.dimensions[0] + column;
     },
 
     // Check if a tile on the map is passable
     checkCollision(column,row) {
         const index = this.tileIndex(column, row);
-        if (index >= 0 && index < this.tiles.length) {
-            return  this.tiles[index].isPassable();
-        }
-        else {
-            return false;
-        }
+        return  this.tiles[index].isPassable();
     },
 
     // Take contents

@@ -15,10 +15,9 @@ class character {
     }
 
     // Method to move a character to a specific location.
-    // Note, I'm going by a column-first convention; it corresponds to X coordinates
+    // Note, I'm going by a column-first convention; since it corresponds to X coordinates.
     moveTo(column, row) {
-        this.column = column;
-        this.row = row;
+        [this.column, this.row] = this.mapReference.keepOnMap([column, row]);
         const position = this.mapReference.elementPosition(this.column, this.row);
         this.element.style.left = `${position[0]}%`;
         this.element.style.top = `${position[1]}%`;
