@@ -15,13 +15,16 @@ const pacLauren = new player(gameMap,13.5,17,timeInterval);
 gameMap.playerRef = pacLauren;
 
 // Initialize a ghost
-const redGhost = new ghost(gameMap, 13.5,17, timeInterval,'red');
+const redGhost = new ghost(gameMap, 13.5,11, timeInterval,'red');
+redGhost.danceMovesToGo = -1;
 
 gameMap.ghostRefs[0] = redGhost;
 
-const blueGhost = new ghost(gameMap, 13.5,17, timeInterval,'blue');
-const orangeGhost = new ghost(gameMap, 13.5,17, timeInterval,'orange');
-const pinkGhost = new ghost(gameMap, 13.5,17, timeInterval,'pink');
+const blueGhost = new ghost(gameMap, 11.5,14, timeInterval,'blue');
+blueGhost.freeFromHouseThreshold=30;
+const orangeGhost = new ghost(gameMap, 15.5,14, timeInterval,'orange');
+orangeGhost.freeFromHouseThreshold=40;
+const pinkGhost = new ghost(gameMap, 13.5,14, timeInterval,'pink');
 
 gameMap.ghostRefs[1]=blueGhost;
 gameMap.ghostRefs[2]=pinkGhost;

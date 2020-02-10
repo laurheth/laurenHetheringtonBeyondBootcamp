@@ -34,6 +34,7 @@ class character {
     // Note, I'm going by a column-first convention; since it corresponds to X coordinates.
     moveTo(column, row) {
         [this.column, this.row] = this.mapReference.keepOnMap([column, row]);
+        // console.log(column, row);
 
         const position = this.mapReference.elementPosition(this.column, this.row);
         this.element.style.left = `${position[0]}%`;
@@ -56,7 +57,6 @@ class character {
     // Returns true on a successful step, and false on an unsuccessful or incomplete step.
     step(direction) {
         const stepSize = this.speedFactor * this.stepSize;
-
         // check if the current position is even valid. If it's not, honestly, just let the step happen, something is fucked up. Let 👏 them 👏 be 👏 free!
         if (!this.mapReference.checkCollision(this.column,this.row)) {
             this.moveTo(this.column + direction[0]*stepSize, this.row + direction[1]*stepSize);

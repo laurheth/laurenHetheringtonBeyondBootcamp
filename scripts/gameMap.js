@@ -11,6 +11,7 @@ class tile {
         this.food=false;
         this.powerUp=false;
         this.tunnel=false;
+        this.horizontalGhostMovementOnly=false;
     }
     makeWall() {
         this.element.classList.add('wall');
@@ -54,6 +55,7 @@ const gameMap = {
     // columns, rows => x,y
     dimensions: [28, 31],
     totalTiles: 0,
+    foodEaten: 0,
     gameBoard: null,
     playerRef: null,
     ghostRefs: [null,null,null,null],
@@ -82,10 +84,13 @@ const gameMap = {
             let mapRow = mapData[i].split('');
             for (let j=0; j<mapRow.length; j++) {
                 const thisTile = this.tiles[i * this.dimensions[0] + j];
-                if (mapRow[j] === '#') {
+                if (mapRow[j] === '#' ) {
                     thisTile.makeWall();
                 }
-                else if (mapRow[j] === '.') {
+                else if (mapRow[j] === '_' || mapRow[j] === 'H') {
+                    thisTile.passable=false;
+                }
+                else if (mapRow[j] === '.' || mapRow[j] === 'V') {
                     thisTile.addFood();
                 }
                 else if (mapRow[j] === '+') {
@@ -93,6 +98,10 @@ const gameMap = {
                 }
                 else if (mapRow[j] === '-') {
                     thisTile.tunnel=true;
+                }
+
+                if (mapRow[j] === 'v' || mapRow[j] === 'V') {
+                    thisTile.horizontalGhostMovementOnly = true;
                 }
             }
         }
@@ -128,10 +137,19 @@ const gameMap = {
         return  this.tiles[index].tunnel;
     },
 
+    // Check if vertical movement is allowed
+    checkVerticalMovementAllowed(column, row) {
+        const index = this.tileIndex(column, row);
+        return !this.tiles[index].horizontalGhostMovementOnly;
+    },
+
     // Take contents
     takeContents(column,row) {
         const index = this.tileIndex(column, row);
         if (index >= 0 && index < this.tiles.length) {
+            if (this.tiles[index].food) {
+                this.foodEaten++;
+            }
             return  this.tiles[index].takeContents();
         }
         else {

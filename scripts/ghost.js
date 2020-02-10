@@ -6,6 +6,14 @@ class ghost extends character {
         this.stepSize = 10 * timeInterval;
         this.targetTile = [0,0];
         this.ghostType = ghostType;
+
+        this.freeFromHouseThreshold = 0; // number of foods to be eaten before it is free
+        this.danceMovesToGo = 6; // minimum number of dance bounces
+        this.freeFromHouse = false;
+        this.houseDanceDirection = 1;
+        this.houseDanceBounds = [startRow+0.5, startRow-0.5];
+        this.houseExit = [13.5,11];
+
         this.setSpeedFactors();
         this.element.classList.add(ghostType+'Ghost');
         switch(ghostType) {
@@ -33,6 +41,10 @@ class ghost extends character {
     }
 
     newTile() {
+        // Only do this logic if outside of the house
+        if (!this.freeFromHouse) {
+            return;
+        }
         // Determine current speed factor
         if (this.mapReference.checkTunnel(this.column, this.row)) {
             this.speedFactor = this.tunnelSpeedFactor;
@@ -43,7 +55,11 @@ class ghost extends character {
 
         // Determine next direction
         this.chooseTarget();
-        const possibleDirections = [[1,0],[-1,0],[0,1],[0,-1]];
+        const possibleDirections = [[1,0],[-1,0]];
+        if (this.mapReference.checkVerticalMovementAllowed(this.column, this.row)) {
+            possibleDirections.push([0,1]);
+            possibleDirections.push([0,-1]);
+        }
         const directionDistances = possibleDirections.map((direction) => {
             // If direction = -currentDirection, it's invalid. Cannot reverse except for during AI state change
             if ((Math.abs(direction[0] + this.currentDirection[0]) + Math.abs(direction[1] + this.currentDirection[1])) === 0) {
@@ -90,12 +106,48 @@ class ghost extends character {
             // Then, doubles the length of that vector.
             // The point that lands is the blue ghosts target
             case 'blue':
-                console.log(this.mapReference.ghostRefs);
                 const redRef = this.mapReference.ghostRefs[0];
                 this.targetTile = [
                     redRef.column + 2 * (playerRef.column + 2*playerRef.currentDirection[0] - redRef.column),
                     redRef.row + 2 * (playerRef.row + 2*playerRef.currentDirection[1] - redRef.row)
                 ]
+        }
+    }
+
+    // Update logic, mainly for escaping from the house
+    doUpdate() {
+        // Do normal activity
+        if (this.freeFromHouse) {
+            super.doUpdate();
+        }
+        // Time to leave the house!
+        else if (this.mapReference.foodEaten >= this.freeFromHouseThreshold && this.danceMovesToGo <= 0) {
+            if (Math.abs(this.column - this.houseExit[0]) + Math.abs(this.row - this.houseExit[1]) === 0) {
+                this.freeFromHouse=true;
+                this.newTile();
+                super.doUpdate();
+            }
+            else if (Math.abs(this.column - this.houseExit[0]) >= this.stepSize) {
+                this.step([this.houseExit[0] - this.column, 0]);
+            }
+            else if (Math.abs(this.row - this.houseExit[1]) >= this.stepSize) {
+                this.step([0, this.houseExit[1] - this.row]);
+            }
+            else {
+                this.moveTo(this.houseExit[0], this.houseExit[1]);
+            }
+        }
+        // Dance inside the house, it's not time to leave yet
+        else {
+            if (this.row > this.houseDanceBounds[0]) {
+                this.houseDanceDirection=-1;
+                this.danceMovesToGo--;
+            }
+            else if (this.row < this.houseDanceBounds[1]){
+                this.houseDanceDirection=1;
+                this.danceMovesToGo--;
+            }
+            this.step([0, this.houseDanceDirection]);
         }
     }
 }
