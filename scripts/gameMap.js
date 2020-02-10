@@ -10,6 +10,7 @@ class tile {
         this.noUpwardsGhosts = false; // some tiles ghosts cannot decide to go up
         this.food=false;
         this.powerUp=false;
+        this.tunnel=false;
     }
     makeWall() {
         this.element.classList.add('wall');
@@ -88,6 +89,9 @@ const gameMap = {
                 else if (mapRow[j] === '+') {
                     thisTile.addPowerUp();
                 }
+                else if (mapRow[j] === '-') {
+                    thisTile.tunnel=true;
+                }
             }
         }
     },
@@ -114,6 +118,12 @@ const gameMap = {
     checkCollision(column,row) {
         const index = this.tileIndex(column, row);
         return  this.tiles[index].isPassable();
+    },
+
+    // Check if tunnel
+    checkTunnel(column, row) {
+        const index = this.tileIndex(column, row);
+        return  this.tiles[index].tunnel;
     },
 
     // Take contents

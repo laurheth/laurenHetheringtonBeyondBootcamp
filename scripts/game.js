@@ -6,7 +6,7 @@ import player from './player.js';
 gameMap.init();
 
 // set a time interval in seconds, might change later
-const timeInterval = 0.05;
+const timeInterval = 1/30;
 
 // Initialize the player
 const pacLauren = new player(gameMap,13.5,17,timeInterval);
