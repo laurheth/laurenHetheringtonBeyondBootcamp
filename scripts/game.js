@@ -3,65 +3,127 @@ import gameMap from './gameMap.js';
 import player from './player.js';
 import ghost from './ghost.js';
 
-// Initialize the game map
-gameMap.init();
+const game = {
+    timeInterval: 1/30,
+    timePassed: 0,
+    gamePlan: ['chase', Infinity],
+    gameLoop: null,
+    level: 1,
+    pacLauren: null,
+    init() {
+        // Initialize the game map
+        gameMap.init();
+        
+        // Initialize the player
+        this.pacLauren = new player(gameMap,13.5,17,this.timeInterval);
+        
+        gameMap.playerRef = this.pacLauren;
+        
+        // Initialize ghosts
+        const redGhost = new ghost(gameMap, 13.5,11, this.timeInterval,'red');
+        redGhost.danceMovesToGo = -1;
+        
+        gameMap.ghostRefs[0] = redGhost;
+        
+        const blueGhost = new ghost(gameMap, 11.5,14, this.timeInterval,'blue');
+        blueGhost.freeFromHouseThreshold=30;
+        const orangeGhost = new ghost(gameMap, 15.5,14, this.timeInterval,'orange');
+        orangeGhost.freeFromHouseThreshold=gameMap.foodLeft / 3;
+        const pinkGhost = new ghost(gameMap, 13.5,14, this.timeInterval,'pink');
+        
+        gameMap.ghostRefs[1]=blueGhost;
+        gameMap.ghostRefs[2]=pinkGhost;
+        gameMap.ghostRefs[3]=orangeGhost;
+        
+        // Setup level properties
+        this.setLevelProperties();
 
-// set a time interval in seconds, might change later
-const timeInterval = 1/30;
-let timePassed=0;
+        // Setup the event listener
+        document.onkeydown = (event) => gameMap.playerRef.getEvent(event);
+        
+        // Setup the main game loop
+        this.gameLoop = setInterval(() => this.mainGameLoop(), 1000 * this.timeInterval);
+    },
 
-// Game plan
-const gamePlan = [
-    ['scatter', 7],
-    ['chase', 20],
-    ['scatter', 7],
-    ['chase', 20],
-    ['scatter', 5],
-    ['chase', 20],
-    ['scatter', 5],
-    ['chase', Infinity],
-]
+    // Function that runs every frame of the game
+    mainGameLoop() {
+        // Run update method for player, and all ghosts
+        this.pacLauren.doUpdate();
+        gameMap.ghostRefs.forEach((ghost)=>ghost.doUpdate());
 
-// Initialize the player
-const pacLauren = new player(gameMap,13.5,17,timeInterval);
+        // advance the clock
+        this.timePassed+=this.timeInterval;
 
-gameMap.playerRef = pacLauren;
-
-// Initialize a ghost
-const redGhost = new ghost(gameMap, 13.5,11, timeInterval,'red');
-redGhost.danceMovesToGo = -1;
-
-gameMap.ghostRefs[0] = redGhost;
-
-const blueGhost = new ghost(gameMap, 11.5,14, timeInterval,'blue');
-blueGhost.freeFromHouseThreshold=30;
-const orangeGhost = new ghost(gameMap, 15.5,14, timeInterval,'orange');
-orangeGhost.freeFromHouseThreshold=gameMap.foodLeft / 3;
-const pinkGhost = new ghost(gameMap, 13.5,14, timeInterval,'pink');
-
-gameMap.ghostRefs[1]=blueGhost;
-gameMap.ghostRefs[2]=pinkGhost;
-gameMap.ghostRefs[3]=orangeGhost;
-
-// Setup the event listener
-document.onkeydown = (event) => pacLauren.getEvent(event);
-
-// Setup the main game loop
-const gameLoop = setInterval(() => {
-    pacLauren.doUpdate();
-    gameMap.ghostRefs.forEach((ghost)=>ghost.doUpdate());
-    timePassed+=timeInterval;
-    if (timePassed > gamePlan[0][1]) {
-        timePassed=0;
-        gamePlan.shift();
-        if (gamePlan[0][0] === 'scatter') {
-            gameMap.ghostRefs.forEach((ghost)=>{
-                ghost.reverseDirection();
-                ghost.scatterMode=true;
-            });
+        // If enough time has gone by, set the next game mode on the agenda
+        if (this.timePassed > this.gamePlan[0][1]) {
+            this.timePassed=0;
+            this.gamePlan.shift();
+            // Scatter mode
+            if (this.gamePlan[0][0] === 'scatter') {
+                gameMap.ghostRefs.forEach((ghost)=>{
+                    ghost.reverseDirection();
+                    ghost.scatterMode=true;
+                });
+            }
+            // Chase mode
+            else {
+                gameMap.ghostRefs.forEach(ghost=>ghost.scatterMode=false);
+            }
         }
-        else {
-            gameMap.ghostRefs.forEach(ghost=>ghost.scatterMode=false);
+    },
+
+    // generate properties for the current level. This includes the game plan, ghost speed, player speed, etc. Everything that is level-specific
+    setLevelProperties() {
+        // First, the game plan
+        this.gamePlan = [
+            ['scatter', 7],
+            ['chase', 20],
+            ['scatter', 7],
+            ['chase', 20],
+            ['scatter', 5],
+            ['chase', 20],
+            ['scatter', 5],
+            ['chase', Infinity],
+        ];
+        if (this.level>=2) {
+            this.gamePlan[5][1] = 1033;
+            this.gamePlan[6][1] = this.timeInterval;
         }
+        if (this.level>=5) {
+            this.gamePlan[0][1] = 5;
+            this.gamePlan[2][1] = 5;
+            this.gamePlan[5][1] += 4;
+        }
+
+        // Next, speeds
+
+        let baseSpeed=0.8;
+        let powerUpSpeed=0.9;
+
+        let baseGhostSpeed = 0.75;
+        let ghostTunnelSpeed = 0.4;
+        let ghostScaredSpeed = 0.5;
+        if (this.level >= 2) {
+            baseSpeed = 0.9;
+            powerUpSpeed = 0.95;
+
+            baseGhostSpeed = 0.85;
+            ghostTunnelSpeed = 0.45;
+            ghostScaredSpeed = 0.55;
+        }
+        if (this.level >= 5) {
+            baseSpeed = 1;
+            powerUpSpeed = 1;
+
+            baseGhostSpeed = 0.95;
+            ghostTunnelSpeed = 0.50;
+            ghostScaredSpeed = 0.6;
+        }
+        gameMap.playerRef.setSpeedFactors(baseSpeed, powerUpSpeed);
+        gameMap.ghostRefs.forEach(ghost => ghost.setSpeedFactors(baseGhostSpeed,ghostScaredSpeed,ghostTunnelSpeed));
+
+        // Todo: cruise elroy mode, bonus items, fright time
     }
-}, 1000 * timeInterval);
+}
+
+game.init();
