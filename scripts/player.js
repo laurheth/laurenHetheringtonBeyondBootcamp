@@ -4,8 +4,6 @@ class player extends character {
     constructor(mapReference, startColumn, startRow, timeInterval) {
         super(mapReference, startColumn, startRow, timeInterval);
         this.stepSize = 10 * timeInterval;
-        // "next direction", most recently requested by player input. Remember it until it becomes valid
-        this.nextDirection = [0,0];
         this.setSpeedFactors();
     }
 
@@ -50,19 +48,6 @@ class player extends character {
                 // Don't change anything
                 break;
         }
-    }
-
-    doUpdate() {
-        // Only significant difference is the player input stored in nextDirection. If it exists, and is valid, do it. Otherwise, just do the regular doUpdate.
-        if (this.nextDirection.some((axis)=>axis)) {
-            if(this.step([...this.nextDirection])) {
-                // nextDirection is now the current direction
-                this.currentDirection = [...this.nextDirection];
-                this.nextDirection = [0,0];
-                return;
-            }
-        }
-        super.doUpdate();
     }
 }
 

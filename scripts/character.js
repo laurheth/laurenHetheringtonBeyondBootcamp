@@ -11,13 +11,16 @@ class character {
         this.mapReference.gameBoard.appendChild(this.element);
 
         // Keep track of the current tile index. Used for some logic in speed changes, such as from eating pellets, entering the tunnel, etc.
-        this.tileIndex=-1;
+        this.tileIndex=this.mapReference.tileIndex(startColumn,startRow);
+
+        
+        // initial direction, no movement
+        this.currentDirection = [0,0];
+        // next direction, used to plan ahead and in logic to turn corners bit more smoothly
+        this.nextDirection = [0,0];
 
         // Move to start position
         this.moveTo(startColumn, startRow);
-
-        // initial direction, no movement
-        this.currentDirection = [0,0];
 
         // set stepsize based on time interval
         // assumes 1 tile per second as a starting default
@@ -105,6 +108,15 @@ class character {
     }
 
     doUpdate() {
+        // If nextDirection is nonzero, give it a try
+        if (this.nextDirection.some((axis)=>axis)) {
+            if(this.step([...this.nextDirection])) {
+                // nextDirection is now the current direction
+                this.currentDirection = [...this.nextDirection];
+                this.nextDirection = [0,0];
+                return;
+            }
+        }
         // if any of the directions are non-zero
         if (this.currentDirection.some((axis)=>axis)) {
             this.step([...this.currentDirection]);
