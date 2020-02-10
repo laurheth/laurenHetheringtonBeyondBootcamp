@@ -10,6 +10,7 @@ class ghost extends character {
         this.freeFromHouseThreshold = 0; // number of foods to be eaten before it is free
         this.danceMovesToGo = 6; // minimum number of dance bounces
         this.freeFromHouse = false;
+        this.scatterMode=true;
         this.houseDanceDirection = 1;
         this.houseDanceBounds = [startRow+0.5, startRow-0.5];
         this.houseExit = [13.5,11];
@@ -80,37 +81,43 @@ class ghost extends character {
 
     // The principal difference between the ghost's is how they choose their target tile. That logic is performed here
     chooseTarget() {
-        const playerRef = this.mapReference.playerRef;
-        switch(this.ghostType) {
-            // Default, and red ghost, "Blinky". Chases directly after player
-            default:
-            case 'red':
-                this.targetTile = [playerRef.column, playerRef.row];
-                break;
-            // Pink ghost, "Pinky". Aims 4 tiles in front of player to try and ambush them
-            case 'pink':
-                this.targetTile = [playerRef.column + 4*playerRef.currentDirection[0], playerRef.row + 4*playerRef.currentDirection[1]];
-                break;
-            // Orange ghost, "Clyde". Chases player, unless they get too close, then hides in the corner
-            case 'orange':
-                const distanceToPlayerSquared = (this.column - playerRef.column)**2 + (this.row - playerRef.row)**2;
-                if (distanceToPlayerSquared > 64) {
+        // If in scatter mode, go to scatter target
+        if (this.scatterMode) {
+            this.targetTile = this.scatterTile;
+        }
+        else {
+            const playerRef = this.mapReference.playerRef;
+            switch(this.ghostType) {
+                // Default, and red ghost, "Blinky". Chases directly after player
+                default:
+                case 'red':
                     this.targetTile = [playerRef.column, playerRef.row];
-                }
-                else {
-                    this.targetTile = this.scatterTile;
-                }
-                break;
-            // Blue ghost, "Inky". Tries to be opposite of the red ghost's position, kinda
-            // Takes a point 2 tiles in front of the player, and draws a vector from the red ghost to that point.
-            // Then, doubles the length of that vector.
-            // The point that lands is the blue ghosts target
-            case 'blue':
-                const redRef = this.mapReference.ghostRefs[0];
-                this.targetTile = [
-                    redRef.column + 2 * (playerRef.column + 2*playerRef.currentDirection[0] - redRef.column),
-                    redRef.row + 2 * (playerRef.row + 2*playerRef.currentDirection[1] - redRef.row)
-                ]
+                    break;
+                // Pink ghost, "Pinky". Aims 4 tiles in front of player to try and ambush them
+                case 'pink':
+                    this.targetTile = [playerRef.column + 4*playerRef.currentDirection[0], playerRef.row + 4*playerRef.currentDirection[1]];
+                    break;
+                // Orange ghost, "Clyde". Chases player, unless they get too close, then hides in the corner
+                case 'orange':
+                    const distanceToPlayerSquared = (this.column - playerRef.column)**2 + (this.row - playerRef.row)**2;
+                    if (distanceToPlayerSquared > 64) {
+                        this.targetTile = [playerRef.column, playerRef.row];
+                    }
+                    else {
+                        this.targetTile = this.scatterTile;
+                    }
+                    break;
+                // Blue ghost, "Inky". Tries to be opposite of the red ghost's position, kinda
+                // Takes a point 2 tiles in front of the player, and draws a vector from the red ghost to that point.
+                // Then, doubles the length of that vector.
+                // The point that lands is the blue ghosts target
+                case 'blue':
+                    const redRef = this.mapReference.ghostRefs[0];
+                    this.targetTile = [
+                        redRef.column + 2 * (playerRef.column + 2*playerRef.currentDirection[0] - redRef.column),
+                        redRef.row + 2 * (playerRef.row + 2*playerRef.currentDirection[1] - redRef.row)
+                    ]
+            }
         }
     }
 
@@ -149,6 +156,11 @@ class ghost extends character {
             }
             this.step([0, this.houseDanceDirection]);
         }
+    }
+
+    reverseDirection() {
+        this.currentDirection = this.currentDirection.map(x=>-x);
+        this.newTile();
     }
 }
 

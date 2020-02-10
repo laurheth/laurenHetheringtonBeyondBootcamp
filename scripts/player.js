@@ -7,7 +7,7 @@ class player extends character {
         this.setSpeedFactors();
     }
 
-    setSpeedFactors(baseSpeed=0.8, powerUpSpeed=0.9, foodSpeed=0.8) {
+    setSpeedFactors(baseSpeed=0.8, powerUpSpeed=0.9, foodSpeed=0.87) {
         this.speedFactor = baseSpeed;
         this.baseSpeedFactor = baseSpeed;
         this.foodSpeedFactor = foodSpeed;
