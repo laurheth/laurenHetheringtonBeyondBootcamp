@@ -59,7 +59,7 @@ const gameMap = {
     gameBoard: null,
     playerRef: null,
     ghostRefs: [null,null,null,null],
-    foodLeft: 0,
+    foodTotal: 0,
 
     tiles: [],
 
@@ -79,7 +79,11 @@ const gameMap = {
             const newTile = new tile(newTileElement);
             this.tiles.push(newTile);
         }
-        
+        this.loadMap();
+    },
+
+    loadMap() {
+        this.foodTotal=0;
         // Draw the map
         for (let i=0; i<mapData.length; i++) {
             let mapRow = mapData[i].split('');
@@ -92,7 +96,7 @@ const gameMap = {
                     thisTile.passable=false;
                 }
                 else if (mapRow[j] === '.' || mapRow[j] === 'V') {
-                    this.foodLeft++;
+                    this.foodTotal++;
                     thisTile.addFood();
                 }
                 else if (mapRow[j] === '+') {

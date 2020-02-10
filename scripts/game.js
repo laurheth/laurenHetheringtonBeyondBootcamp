@@ -28,11 +28,11 @@ const game = {
         const blueGhost = new ghost(gameMap, 11.5,14, this.timeInterval,'blue');
         blueGhost.freeFromHouseThreshold=30;
         const orangeGhost = new ghost(gameMap, 15.5,14, this.timeInterval,'orange');
-        orangeGhost.freeFromHouseThreshold=gameMap.foodLeft / 3;
+        orangeGhost.freeFromHouseThreshold=gameMap.foodTotal / 3;
         const pinkGhost = new ghost(gameMap, 13.5,14, this.timeInterval,'pink');
         
-        gameMap.ghostRefs[1]=blueGhost;
-        gameMap.ghostRefs[2]=pinkGhost;
+        gameMap.ghostRefs[1]=pinkGhost;
+        gameMap.ghostRefs[2]=blueGhost;
         gameMap.ghostRefs[3]=orangeGhost;
         
         // Setup level properties
@@ -47,12 +47,13 @@ const game = {
 
     // Function that runs every frame of the game
     mainGameLoop() {
+        // advance the clock
+        this.timePassed+=this.timeInterval;
+
         // Run update method for player, and all ghosts
         this.pacLauren.doUpdate();
         gameMap.ghostRefs.forEach((ghost)=>ghost.doUpdate());
 
-        // advance the clock
-        this.timePassed+=this.timeInterval;
 
         // If enough time has gone by, set the next game mode on the agenda
         if (this.timePassed > this.gamePlan[0][1]) {
@@ -70,6 +71,20 @@ const game = {
                 gameMap.ghostRefs.forEach(ghost=>ghost.scatterMode=false);
             }
         }
+
+        // Check if every food has been eaten. If it has, go to the next level!
+        if (gameMap.foodEaten >= gameMap.foodTotal) {
+            this.nextLevel();
+        }
+    },
+
+    nextLevel() {
+        gameMap.foodEaten=0;
+        this.level++;
+        this.setLevelProperties();
+        gameMap.playerRef.moveTo(13.5,17);
+        this.timePassed=0;
+        gameMap.loadMap();
     },
 
     // generate properties for the current level. This includes the game plan, ghost speed, player speed, etc. Everything that is level-specific
@@ -120,7 +135,23 @@ const game = {
             ghostScaredSpeed = 0.6;
         }
         gameMap.playerRef.setSpeedFactors(baseSpeed, powerUpSpeed);
-        gameMap.ghostRefs.forEach(ghost => ghost.setSpeedFactors(baseGhostSpeed,ghostScaredSpeed,ghostTunnelSpeed));
+        gameMap.ghostRefs.forEach(ghost => {
+            ghost.setSpeedFactors(baseGhostSpeed,ghostScaredSpeed,ghostTunnelSpeed)
+            ghost.reset();
+        });
+
+        // Ghost time in the ghost house
+        gameMap.ghostRefs[0].danceMovesToGo=-1;
+        gameMap.ghostRefs[1].freeFromHouseThreshold=0;
+        if (this.level >= 2) {
+            gameMap.ghostRefs[2].danceMovesToGo=12;
+            gameMap.ghostRefs[2].freeFromHouseThreshold=0;
+            gameMap.ghostRefs[3].freeFromHouseThreshold=50;
+        }
+        if (this.level >= 3) {
+            gameMap.ghostRefs[3].freeFromHouseThreshold=0;
+            gameMap.ghostRefs[3].danceMovesToGo=18;
+        }
 
         // Todo: cruise elroy mode, bonus items, fright time
     }

@@ -7,6 +7,8 @@ class ghost extends character {
         this.targetTile = [0,0];
         this.ghostType = ghostType;
 
+        this.initialLocation = [startColumn, startRow];
+
         this.freeFromHouseThreshold = 0; // number of foods to be eaten before it is free
         this.danceMovesToGo = 6; // minimum number of dance bounces
         this.freeFromHouse = false;
@@ -161,6 +163,12 @@ class ghost extends character {
     reverseDirection() {
         this.currentDirection = this.currentDirection.map(x=>-x);
         this.newTile();
+    }
+
+    reset() {
+        this.moveTo(...this.initialLocation);
+        this.freeFromHouse=false;
+        this.danceMovesToGo=6;
     }
 }
 
