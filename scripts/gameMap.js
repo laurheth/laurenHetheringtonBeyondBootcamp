@@ -55,6 +55,8 @@ const gameMap = {
     dimensions: [28, 31],
     totalTiles: 0,
     gameBoard: null,
+    playerRef: null,
+    ghostRefs: [null,null,null,null],
 
     tiles: [],
 

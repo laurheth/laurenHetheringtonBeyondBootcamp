@@ -12,8 +12,20 @@ const timeInterval = 1/30;
 // Initialize the player
 const pacLauren = new player(gameMap,13.5,17,timeInterval);
 
+gameMap.playerRef = pacLauren;
+
 // Initialize a ghost
-const redGhost = new ghost(gameMap, 13.5,17, timeInterval);
+const redGhost = new ghost(gameMap, 13.5,17, timeInterval,'red');
+
+gameMap.ghostRefs[0] = redGhost;
+
+const blueGhost = new ghost(gameMap, 13.5,17, timeInterval,'blue');
+const orangeGhost = new ghost(gameMap, 13.5,17, timeInterval,'orange');
+const pinkGhost = new ghost(gameMap, 13.5,17, timeInterval,'pink');
+
+gameMap.ghostRefs[1]=blueGhost;
+gameMap.ghostRefs[2]=pinkGhost;
+gameMap.ghostRefs[3]=orangeGhost;
 
 // Setup the event listener
 document.onkeydown = (event) => pacLauren.getEvent(event);
@@ -22,5 +34,5 @@ document.onkeydown = (event) => pacLauren.getEvent(event);
 const gameLoop = setInterval(() => {
     // console.log(pacLauren);
     pacLauren.doUpdate();
-    redGhost.doUpdate();
+    gameMap.ghostRefs.forEach((ghost)=>ghost.doUpdate());
 }, 1000 * timeInterval);
