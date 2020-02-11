@@ -189,6 +189,10 @@ const game = {
             ghostTunnelSpeed = 0.50;
             ghostScaredSpeed = 0.6;
         }
+        if (this.level >= 21) {
+            baseSpeed = 0.9;
+            powerUpSpeed = 0.95;
+        }
         gameMap.playerRef.setSpeedFactors(baseSpeed, powerUpSpeed);
         gameMap.ghostRefs.forEach(ghost => {
             ghost.setSpeedFactors(baseGhostSpeed,ghostScaredSpeed,ghostTunnelSpeed)
@@ -208,7 +212,35 @@ const game = {
             gameMap.ghostRefs[3].danceMovesToGo=18;
         }
 
-        // Todo: cruise elroy mode, bonus items, fright time
+        // Cruise elroy mode
+        // Number of remaining foods at which the red ghost should go faster.
+        let elroyNumber;
+        if (this.level >= 19) {
+            elroyNumber = 120;
+        }
+        else if (this.level >= 15) {
+            elroyNumber = 100;
+        }
+        else if (this.level >= 12) {
+            elroyNumber = 80;
+        }
+        else if (this.level >= 9) {
+            elroyMumber = 60;
+        }
+        else if (this.level >= 6) {
+            elroyNumber = 50;
+        }
+        else if (this.level >= 3) {
+            elroyNumber = 40;
+        }
+        else if (this.level >= 2) {
+            elroyNumber = 30;
+        }
+        else {
+            elroyNumber = 20;
+        }
+
+        gameMap.ghostRefs[0].elroyMode = elroyNumber;
     }
 }
 

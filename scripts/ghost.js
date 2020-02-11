@@ -14,13 +14,16 @@ class ghost extends character {
         this.freeFromHouse = false;
         this.scatterMode=true;
         this.houseDanceDirection = 1;
-        this.houseDanceBounds = [startRow+0.5, startRow-0.5];
+        this.houseDanceBounds = [14.5, 13.5];
         this.houseExit = [13.5,11];
 
         this.afraid=false;
 
         this.captured=false;
         this.warningActive=false;
+
+        // "Cruise Elroy" mode. When fewer than these numbers of foods are present, the red ghost goes faster
+        this.elroyMode = -2;
 
         this.setSpeedFactors();
         this.element.classList.add(ghostType+'Ghost');
@@ -51,6 +54,7 @@ class ghost extends character {
     newTile() {
         // Only do this logic if outside of the house
         if (!this.freeFromHouse) {
+            this.speedFactor = this.tunnelSpeedFactor;
             return;
         }
         // Determine current speed factor
@@ -65,6 +69,13 @@ class ghost extends character {
         }
         else {
             this.speedFactor = this.baseSpeedFactor;
+        }
+
+        if (this.mapReference.foodTotal - this.mapReference.foodEaten < this.elroyMode) {
+            this.speedFactor += 0.05;
+            if (this.mapReference.foodTotal - this.mapReference.foodEaten < this.elroyMode/2) {
+                this.speedFactor += 0.05;
+            }
         }
 
         // Determine next direction
@@ -167,10 +178,10 @@ class ghost extends character {
                 super.doUpdate();
             }
             else if (Math.abs(this.column - this.houseExit[0]) >= this.stepSize) {
-                this.step([this.houseExit[0] - this.column, 0]);
+                this.step([Math.sign(this.houseExit[0] - this.column), 0]);
             }
             else if (Math.abs(this.row - this.houseExit[1]) >= this.stepSize) {
-                this.step([0, this.houseExit[1] - this.row]);
+                this.step([0, Math.sign(this.houseExit[1] - this.row)]);
             }
             else {
                 this.moveTo(this.houseExit[0], this.houseExit[1]);
@@ -178,15 +189,15 @@ class ghost extends character {
         }
         // Dance inside the house, it's not time to leave yet
         else {
-            if (this.row > this.houseDanceBounds[0]) {
+            if (this.row > this.houseDanceBounds[0] && this.houseDanceDirection>0) {
                 this.houseDanceDirection=-1;
                 this.danceMovesToGo--;
             }
-            else if (this.row < this.houseDanceBounds[1]){
+            else if (this.row < this.houseDanceBounds[1] && this.houseDanceDirection<0) {
                 this.houseDanceDirection=1;
                 this.danceMovesToGo--;
             }
-            this.step([0, this.houseDanceDirection]);
+            this.step([0, this.houseDanceDirection],true);
         }
     }
 
@@ -205,14 +216,13 @@ class ghost extends character {
 
     makeAfraid(afraid) {
         this.afraid = afraid;
+        this.deactivateWarning();
         if (afraid) {
             this.reverseDirection();
             this.element.classList.add('afraid');
         }
         else {
             this.element.classList.remove('afraid');
-            this.element.classList.remove('endWarning');
-            this.warningActive=false;
         }
     }
 
@@ -223,6 +233,11 @@ class ghost extends character {
         }
     }
 
+    deactivateWarning() {
+        this.element.classList.remove('endWarning');
+        this.warningActive=false;
+    }
+
     capture() {
         this.captured=true;
     }
@@ -230,6 +245,9 @@ class ghost extends character {
     release() {
         this.captured=false;
         this.makeAfraid(false);
+        this.houseDanceDirection = 1;
+        this.danceMovesToGo = 1;
+        this.freeFromHouse=false;
     }
 }
 

@@ -57,10 +57,10 @@ class character {
 
     // Method to step in a direction. Includes checks for obstacles
     // Returns true on a successful step, and false on an unsuccessful or incomplete step.
-    step(direction) {
+    step(direction,ignoreCollisions=false) {
         const stepSize = this.speedFactor * this.stepSize;
         // check if the current position is even valid. If it's not, honestly, just let the step happen, something is fucked up. Let 👏 them 👏 be 👏 free!
-        if (!this.mapReference.checkCollision(this.column,this.row)) {
+        if (ignoreCollisions || !this.mapReference.checkCollision(this.column,this.row)) {
             this.moveTo(this.column + direction[0]*stepSize, this.row + direction[1]*stepSize);
             return true;
         }
