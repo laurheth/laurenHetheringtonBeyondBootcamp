@@ -123,7 +123,7 @@ class player extends character {
     }
 
     reset() {
-        this.moveTo(13.5,17);
+        this.moveTo(13.5,23);
         this.nextDirection=[0,0];
         this.currentDirection=[0,0];
     }

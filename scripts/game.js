@@ -20,7 +20,7 @@ const game = {
         gameMap.init();
         
         // Initialize the player
-        this.pacLauren = new player(gameMap,13.5,17,this.timeInterval);
+        this.pacLauren = new player(gameMap,13.5,23,this.timeInterval);
         
         // Store a reference for the player
         gameMap.playerRef = this.pacLauren;
@@ -72,25 +72,6 @@ const game = {
         // Run update method for player, and all ghosts
         this.pacLauren.doUpdate();
         gameMap.ghostRefs.forEach((ghost)=>ghost.doUpdate());
-
-        // Check for collisions with the ghosts
-        let playerDies=false;
-        gameMap.ghostRefs.forEach((ghost) => {
-            if (Math.round(ghost.column) === Math.round(this.pacLauren.column) &&
-            Math.round(ghost.row) === Math.round(this.pacLauren.row)) {
-                if (ghost.afraid) {
-                    ghost.capture();
-                }
-                else {
-                    playerDies = true;
-                }
-            }
-        });
-
-        if (playerDies) {
-            this.playerCaptured();
-            return;
-        }
 
         // If enough time has gone by, set the next game mode on the agenda
         if (this.timePassed > this.gamePlan[0][1]) {
@@ -154,7 +135,7 @@ const game = {
 
     addToScore(number) {
         const newScore = this.score + number;
-        if (this.score < 10000 && newScore >= 10000 ) {
+        if ((this.score % 10000) > (newScore % 10000) ) {
             // extra life!
             this.addToLives(1);
         }
