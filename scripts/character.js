@@ -25,6 +25,8 @@ class character {
         // set stepsize based on time interval
         // assumes 1 tile per second as a starting default
         this.stepSize = timeInterval;
+        // Remember the time interval
+        this.timeInterval = timeInterval;
 
         // Speed factor, to adjust for various circumstances
         this.speedFactor = 1;

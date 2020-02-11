@@ -5,6 +5,10 @@ class player extends character {
         super(mapReference, startColumn, startRow, timeInterval);
         this.stepSize = 10 * timeInterval;
         this.setSpeedFactors();
+        this.poweredUp=false;
+        this.poweredUpTimer = 0;
+        this.powerUpDuration = 6;
+        this.powerUpEndWarningTime = 2.5;
     }
 
     setSpeedFactors(baseSpeed=0.8, powerUpSpeed=0.9, foodSpeed=0.87) {
@@ -16,17 +20,40 @@ class player extends character {
 
     newTile() {
         // reset speed factor
-        this.speedFactor = this.baseSpeedFactor;
+        if (this.poweredUp) {
+            this.speedFactor = this.powerUpSpeedFactor;
+        }
+        else {
+            this.speedFactor = this.baseSpeedFactor;
+        }
     }
 
     moveTo(column, row) {
         super.moveTo(column,row);
+
+        // Grab contents from the map
         const contentsTaken = this.mapReference.takeContents(column,row);
         if (contentsTaken) {
+            // om nom food
             if (contentsTaken === 'food') {
-                this.speedFactor = this.baseSpeedFactor * this.foodSpeedFactor;
+                this.speedFactor *= this.foodSpeedFactor;
+            }
+            // power up! om nom ghosts!
+            else if (contentsTaken === 'powerUp') {
+                this.powerUp();
             }
         }
+    }
+
+    powerUp() {
+        this.poweredUp=true;
+        this.poweredUpTimer += this.powerUpDuration;
+        this.mapReference.ghostRefs.forEach(ghost => ghost.makeAfraid(true));
+    }
+
+    powerDown() {
+        this.poweredUp = false;
+        this.mapReference.ghostRefs.forEach(ghost => ghost.makeAfraid(false));
     }
 
     getEvent(event) {
@@ -49,6 +76,28 @@ class player extends character {
                 break;
         }
     }
+
+    doUpdate() {
+        super.doUpdate();
+        if (this.poweredUp) {
+            this.poweredUpTimer -= this.timeInterval;
+            if (this.poweredUpTimer <= 0) {
+                this.poweredUpTimer=0;
+                this.powerDown();
+            } else if (this.poweredUpTimer <= this.powerUpEndWarningTime) {
+                this.mapReference.ghostRefs.forEach((ghost) => {
+                    ghost.activateWarning();
+                });
+            }
+        }
+    }
+
+    reset() {
+        this.moveTo(13.5,17);
+        this.nextDirection=[0,0];
+        this.currentDirection=[0,0];
+    }
+
 }
 
 export default player;

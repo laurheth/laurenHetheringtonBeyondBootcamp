@@ -185,6 +185,17 @@ legend, button::-moz-focus-inner, input::-moz-focus-inner {
   margin: 0 auto;
 }
 
+@keyframes flash {
+  0% {
+    background: white;
+  }
+  50% {
+    background: blue;
+  }
+  100% {
+    background: white;
+  }
+}
 .tile {
   width: 100%;
   padding-bottom: 100%;
@@ -228,6 +239,24 @@ legend, button::-moz-focus-inner, input::-moz-focus-inner {
   width: calc((28 * 80vh / 31));
   margin: 0 auto;
 }
+.game .messages {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+}
+.game .messages.hide {
+  display: none;
+}
 
 .character {
   position: absolute;
@@ -243,8 +272,14 @@ legend, button::-moz-focus-inner, input::-moz-focus-inner {
   background: orange;
 }
 .character.blueGhost {
-  background: blue;
+  background: cyan;
 }
 .character.pinkGhost {
   background: pink;
+}
+.character.afraid {
+  background: blue;
+}
+.character.afraid.endWarning {
+  animation: flash 0.5s steps(1) infinite;
 }

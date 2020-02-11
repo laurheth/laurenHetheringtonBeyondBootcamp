@@ -4,12 +4,13 @@ import player from './player.js';
 import ghost from './ghost.js';
 
 const game = {
-    timeInterval: 1/30,
+    timeInterval: 1/60,
     timePassed: 0,
     gamePlan: ['chase', Infinity],
     gameLoop: null,
     level: 1,
     pacLauren: null,
+    paused: false,
     init() {
         // Initialize the game map
         gameMap.init();
@@ -17,7 +18,9 @@ const game = {
         // Initialize the player
         this.pacLauren = new player(gameMap,13.5,17,this.timeInterval);
         
+        // Store a reference for the player
         gameMap.playerRef = this.pacLauren;
+        gameMap.playerRef.dieFunction = this.playerCaptured;
         
         // Initialize ghosts
         const redGhost = new ghost(gameMap, 13.5,11, this.timeInterval,'red');
@@ -40,6 +43,7 @@ const game = {
 
         // Setup the event listener
         document.onkeydown = (event) => gameMap.playerRef.getEvent(event);
+        this.getReady();
         
         // Setup the main game loop
         this.gameLoop = setInterval(() => this.mainGameLoop(), 1000 * this.timeInterval);
@@ -47,13 +51,35 @@ const game = {
 
     // Function that runs every frame of the game
     mainGameLoop() {
+        if (this.paused) {
+            return;
+        }
         // advance the clock
         this.timePassed+=this.timeInterval;
 
+    
         // Run update method for player, and all ghosts
         this.pacLauren.doUpdate();
         gameMap.ghostRefs.forEach((ghost)=>ghost.doUpdate());
 
+        // Check for collisions with the ghosts
+        let playerDies=false;
+        gameMap.ghostRefs.forEach((ghost) => {
+            if (Math.round(ghost.column) === Math.round(this.pacLauren.column) &&
+            Math.round(ghost.row) === Math.round(this.pacLauren.row)) {
+                if (ghost.afraid) {
+                    ghost.capture();
+                }
+                else {
+                    playerDies = true;
+                }
+            }
+        });
+
+        if (playerDies) {
+            this.playerCaptured();
+            return;
+        }
 
         // If enough time has gone by, set the next game mode on the agenda
         if (this.timePassed > this.gamePlan[0][1]) {
@@ -74,7 +100,7 @@ const game = {
 
         // Check if every food has been eaten. If it has, go to the next level!
         if (gameMap.foodEaten >= gameMap.foodTotal) {
-            this.nextLevel();
+            this.victory();
         }
     },
 
@@ -82,9 +108,38 @@ const game = {
         gameMap.foodEaten=0;
         this.level++;
         this.setLevelProperties();
-        gameMap.playerRef.moveTo(13.5,17);
+        gameMap.playerRef.reset();
         this.timePassed=0;
         gameMap.loadMap();
+        this.getReady();
+    },
+
+    newLife() {
+        this.setLevelProperties();
+        gameMap.playerRef.reset();
+        this.timePassed=0;
+        this.getReady();
+    },
+
+    playerCaptured() {
+        this.paused = true;
+        setTimeout(()=>this.newLife(),2000);
+    },
+    
+    getReady() {
+        this.paused=true;
+        document.querySelector('#game .messages').classList.remove('hide');
+        setTimeout(()=>this.commencePlay(),5000);
+    },
+
+    commencePlay() {
+        this.paused = false;
+        document.querySelector('#game .messages').classList.add('hide');
+    },
+
+    victory() {
+        this.paused = true;
+        setTimeout(()=>this.nextLevel(),2000);
     },
 
     // generate properties for the current level. This includes the game plan, ghost speed, player speed, etc. Everything that is level-specific

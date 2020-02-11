@@ -17,6 +17,11 @@ class ghost extends character {
         this.houseDanceBounds = [startRow+0.5, startRow-0.5];
         this.houseExit = [13.5,11];
 
+        this.afraid=false;
+
+        this.captured=false;
+        this.warningActive=false;
+
         this.setSpeedFactors();
         this.element.classList.add(ghostType+'Ghost');
         switch(ghostType) {
@@ -49,7 +54,13 @@ class ghost extends character {
             return;
         }
         // Determine current speed factor
-        if (this.mapReference.checkTunnel(this.column, this.row)) {
+        if (this.captured) {
+            this.speedFactor = 1.5;
+        }
+        else if (this.afraid) {
+            this.speedFactor = this.scaredSpeedFactor;
+        }
+        else if (this.mapReference.checkTunnel(this.column, this.row)) {
             this.speedFactor = this.tunnelSpeedFactor;
         }
         else {
@@ -59,7 +70,7 @@ class ghost extends character {
         // Determine next direction
         this.chooseTarget();
         const possibleDirections = [[1,0],[-1,0]];
-        if (this.mapReference.checkVerticalMovementAllowed(this.column, this.row)) {
+        if (this.mapReference.checkVerticalMovementAllowed(this.column, this.row) || this.captured) {
             possibleDirections.push([0,1]);
             possibleDirections.push([0,-1]);
         }
@@ -76,15 +87,34 @@ class ghost extends character {
                 return Math.abs(this.column + direction[0] - this.targetTile[0])**2 + Math.abs(this.row + direction[1] - this.targetTile[1])**2;
             }
         });
-        // Whichever direction is closest to target tile, take it!
-        const minIndex = directionDistances.indexOf(Math.min(...directionDistances));
-        this.nextDirection = possibleDirections[minIndex];
+
+        if (!this.afraid || this.captured) {
+            // Whichever direction is closest to target tile, take it!
+            const minIndex = directionDistances.indexOf(Math.min(...directionDistances));
+            this.nextDirection = possibleDirections[minIndex];
+        }
+        else {
+            const acceptableOptions = possibleDirections.filter((direction, index) => isFinite(directionDistances[index]));
+            if (acceptableOptions.length > 1) {
+                this.nextDirection = acceptableOptions[Math.floor(acceptableOptions.length * Math.random())];
+            }
+            else {
+                this.nextDirection = acceptableOptions[0];
+            }
+        }
     }
 
     // The principal difference between the ghost's is how they choose their target tile. That logic is performed here
     chooseTarget() {
+        // Has been captured, return home!
+        if (this.captured) {
+            this.targetTile = this.houseExit;
+            if ((Math.abs(this.column - this.houseExit[0]) + Math.abs(this.row - this.houseExit[1])) < 2*this.stepSize * this.speedFactor) {
+                this.release();
+            }
+        }
         // If in scatter mode, go to scatter target
-        if (this.scatterMode) {
+        else if (this.scatterMode) {
             this.targetTile = this.scatterTile;
         }
         else {
@@ -166,9 +196,40 @@ class ghost extends character {
     }
 
     reset() {
+        this.makeAfraid(false);
         this.moveTo(...this.initialLocation);
         this.freeFromHouse=false;
         this.danceMovesToGo=6;
+        this.scatterMode=true;
+    }
+
+    makeAfraid(afraid) {
+        this.afraid = afraid;
+        if (afraid) {
+            this.reverseDirection();
+            this.element.classList.add('afraid');
+        }
+        else {
+            this.element.classList.remove('afraid');
+            this.element.classList.remove('endWarning');
+            this.warningActive=false;
+        }
+    }
+
+    activateWarning() {
+        if (!this.warningActive) {
+            this.element.classList.add('endWarning');
+            this.warningActive=true;
+        }
+    }
+
+    capture() {
+        this.captured=true;
+    }
+
+    release() {
+        this.captured=false;
+        this.makeAfraid(false);
     }
 }
 
