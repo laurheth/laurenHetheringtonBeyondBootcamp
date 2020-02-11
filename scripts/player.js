@@ -9,6 +9,9 @@ class player extends character {
         this.poweredUpTimer = 0;
         this.powerUpDuration = 6;
         this.powerUpEndWarningTime = 2.5;
+        this.captureGhostPointValue = 200;
+        this.addToScore=null;
+        this.dieFunction=null;
     }
 
     setSpeedFactors(baseSpeed=0.8, powerUpSpeed=0.9, foodSpeed=0.87) {
@@ -37,10 +40,12 @@ class player extends character {
             // om nom food
             if (contentsTaken === 'food') {
                 this.speedFactor *= this.foodSpeedFactor;
+                if (this.addToScore) {this.addToScore(10);}
             }
             // power up! om nom ghosts!
             else if (contentsTaken === 'powerUp') {
                 this.powerUp();
+                if (this.addToScore) {this.addToScore(50);}
             }
         }
     }
@@ -52,6 +57,7 @@ class player extends character {
     }
 
     powerDown() {
+        this.captureGhostPointValue = 200;
         this.poweredUp = false;
         this.mapReference.ghostRefs.forEach(ghost => ghost.makeAfraid(false));
     }
@@ -89,6 +95,30 @@ class player extends character {
                     ghost.activateWarning();
                 });
             }
+        }
+        // Check for collisions with the ghosts
+        let playerDies=false;
+        this.mapReference.ghostRefs.forEach((ghost) => {
+            if (Math.round(ghost.column) === Math.round(this.column) &&
+            Math.round(ghost.row) === Math.round(this.row)) {
+                if (ghost.afraid) {
+                    if (!ghost.captured) {
+                        if (this.addToScore) {
+                            this.addToScore(this.captureGhostPointValue);
+                        }
+                        this.captureGhostPointValue*=2;
+                        ghost.capture();
+                    }
+                }
+                else {
+                    playerDies = true;
+                }
+            }
+        });
+
+        if (playerDies && this.dieFunction) {
+            this.dieFunction();
+            return;
         }
     }
 

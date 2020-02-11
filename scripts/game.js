@@ -11,6 +11,10 @@ const game = {
     level: 1,
     pacLauren: null,
     paused: false,
+    score: 0,
+    scoreElement: null,
+    lives: 2,
+    livesElement: null,
     init() {
         // Initialize the game map
         gameMap.init();
@@ -20,7 +24,9 @@ const game = {
         
         // Store a reference for the player
         gameMap.playerRef = this.pacLauren;
-        gameMap.playerRef.dieFunction = this.playerCaptured;
+        gameMap.playerRef.addToScore = (number) => this.addToScore(number);
+        gameMap.playerRef.dieFunction = () => this.playerCaptured();
+
         
         // Initialize ghosts
         const redGhost = new ghost(gameMap, 13.5,11, this.timeInterval,'red');
@@ -44,6 +50,11 @@ const game = {
         // Setup the event listener
         document.onkeydown = (event) => gameMap.playerRef.getEvent(event);
         this.getReady();
+
+        // Get the elements for keeping track of score and lives
+        this.livesElement = document.getElementById('lives');
+        this.scoreElement = document.getElementById('score');
+
         
         // Setup the main game loop
         this.gameLoop = setInterval(() => this.mainGameLoop(), 1000 * this.timeInterval);
@@ -123,13 +134,48 @@ const game = {
 
     playerCaptured() {
         this.paused = true;
-        setTimeout(()=>this.newLife(),2000);
+        this.addToLives(-1);
+        if (this.lives >= 0) {
+            setTimeout(()=>this.newLife(),2000);
+        }
+        else {
+            this.gameOver();
+        }
+    },
+
+    addToLives(number) {
+        this.lives+=number;
+        this.updateLives();
+    },
+
+    updateLives() {
+        this.livesElement.textContent = Math.floor(Math.max(this.lives,0));
+    },
+
+    addToScore(number) {
+        const newScore = this.score + number;
+        if (this.score < 10000 && newScore >= 10000 ) {
+            // extra life!
+            this.addToLives(1);
+        }
+        this.score += number;
+        this.updateScore();
+    },
+
+    updateScore() {
+        this.scoreElement.textContent = Math.floor(Math.max(this.score,0));
     },
     
     getReady() {
         this.paused=true;
+        document.querySelector('#game .messages p').textContent = "Ready!";
         document.querySelector('#game .messages').classList.remove('hide');
         setTimeout(()=>this.commencePlay(),5000);
+    },
+
+    gameOver() {
+        document.querySelector('#game .messages p').textContent = "Game over!";
+        document.querySelector('#game .messages').classList.remove('hide');
     },
 
     commencePlay() {
