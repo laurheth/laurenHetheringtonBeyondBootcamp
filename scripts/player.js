@@ -21,8 +21,7 @@ class player extends character {
         this.powerUpSpeedFactor = powerUpSpeed;
     }
 
-    newTile() {
-        super.newTile();
+    determineSpeedFactor() {
         // reset speed factor
         if (this.poweredUp) {
             this.speedFactor = this.powerUpSpeedFactor;
@@ -102,7 +101,7 @@ class player extends character {
     // Method to check for collisions with ghosts
     checkGhostCollision() {
         let playerDies=false;
-        this.mapReference.ghostRefs.forEach((ghost) => {
+        this.mapReference.ghostRefs.filter(ghost=>ghost).forEach((ghost) => {
             if (Math.round(ghost.column) === Math.round(this.column) &&
             Math.round(ghost.row) === Math.round(this.row)) {
                 if (ghost.afraid) {

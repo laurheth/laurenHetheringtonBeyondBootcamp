@@ -85,32 +85,31 @@ const gameMap = {
     loadMap() {
         this.foodTotal=0;
         // Draw the map
-        for (let i=0; i<mapData.length; i++) {
-            let mapRow = mapData[i].split('');
-            for (let j=0; j<mapRow.length; j++) {
+        mapData.forEach((mapRow,i) => {
+            mapRow.split('').forEach((mapTile,j) => {
                 const thisTile = this.tiles[i * this.dimensions[0] + j];
-                if (mapRow[j] === '#' ) {
+                if (mapTile === '#' ) {
                     thisTile.makeWall();
                 }
-                else if (mapRow[j] === '_' || mapRow[j] === 'H') {
+                else if (mapTile === '_' || mapTile === 'H') {
                     thisTile.passable=false;
                 }
-                else if (mapRow[j] === '.' || mapRow[j] === 'V') {
+                else if (mapTile === '.' || mapTile === 'V') {
                     this.foodTotal++;
                     thisTile.addFood();
                 }
-                else if (mapRow[j] === '+') {
+                else if (mapTile === '+') {
                     thisTile.addPowerUp();
                 }
-                else if (mapRow[j] === '-') {
+                else if (mapTile === '-') {
                     thisTile.tunnel=true;
                 }
 
-                if (mapRow[j] === 'v' || mapRow[j] === 'V') {
+                if (mapTile === 'v' || mapTile === 'V') {
                     thisTile.horizontalGhostMovementOnly = true;
                 }
-            }
-        }
+            })
+        });
     },
 
     // Take a position and force it to be within the map

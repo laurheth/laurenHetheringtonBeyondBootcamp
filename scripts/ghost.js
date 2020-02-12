@@ -52,36 +52,17 @@ class ghost extends character {
     }
 
     newTile() {
-        // Only do this logic if outside of the house
-        if (!this.freeFromHouse) {
-            this.speedFactor = this.tunnelSpeedFactor;
-            return;
-        }
-
         super.newTile();
+        
+        // Only do this logic if outside of the house
+        if (this.freeFromHouse) {
+            // Determine next direction
+            this.determineNextDirection();
+        }
+    }
 
-        // Determine current speed factor
-        if (this.captured) {
-            this.speedFactor = 1.5;
-        }
-        else if (this.afraid) {
-            this.speedFactor = this.scaredSpeedFactor;
-        }
-        else if (this.mapReference.checkTunnel(this.column, this.row)) {
-            this.speedFactor = this.tunnelSpeedFactor;
-        }
-        else {
-            this.speedFactor = this.baseSpeedFactor;
-        }
-
-        if (this.mapReference.foodTotal - this.mapReference.foodEaten < this.elroyMode) {
-            this.speedFactor += 0.05;
-            if (this.mapReference.foodTotal - this.mapReference.foodEaten < this.elroyMode/2) {
-                this.speedFactor += 0.05;
-            }
-        }
-
-        // Determine next direction
+    // Determine the next direction to travel in
+    determineNextDirection() {
         this.chooseTarget();
         const possibleDirections = [[1,0],[-1,0]];
         if (this.mapReference.checkVerticalMovementAllowed(this.column, this.row) || this.captured) {
@@ -118,6 +99,34 @@ class ghost extends character {
         }
     }
 
+    // Determine current speed factor
+    determineSpeedFactor() {
+        if (!this.freeFromHouse) {
+            this.speedFactor = this.tunnelSpeedFactor;
+        }
+        else {
+            if (this.captured) {
+                this.speedFactor = 1.5;
+            }
+            else if (this.afraid) {
+                this.speedFactor = this.scaredSpeedFactor;
+            }
+            else if (this.mapReference.checkTunnel(this.column, this.row)) {
+                this.speedFactor = this.tunnelSpeedFactor;
+            }
+            else {
+                this.speedFactor = this.baseSpeedFactor;
+            }
+            // increase speed for "Cruise Elroy" mode.
+            if (this.mapReference.foodTotal - this.mapReference.foodEaten < this.elroyMode) {
+                this.speedFactor += 0.05;
+                if (this.mapReference.foodTotal - this.mapReference.foodEaten < this.elroyMode/2) {
+                    this.speedFactor += 0.05;
+                }
+            }
+        }
+    }
+
     // The principal difference between the ghost's is how they choose their target tile. That logic is performed here
     chooseTarget() {
         // Has been captured, return home!
@@ -131,6 +140,7 @@ class ghost extends character {
         else if (this.scatterMode) {
             this.targetTile = this.scatterTile;
         }
+        // Otherwise, do default, player hunting behavior
         else {
             const playerRef = this.mapReference.playerRef;
             switch(this.ghostType) {
@@ -156,7 +166,7 @@ class ghost extends character {
                 // Blue ghost, "Inky". Tries to be opposite of the red ghost's position, kinda
                 // Takes a point 2 tiles in front of the player, and draws a vector from the red ghost to that point.
                 // Then, doubles the length of that vector.
-                // The point that lands is the blue ghosts target
+                // That is the blue ghosts target. Functionally a fancier approach to ambushing
                 case 'blue':
                     const redRef = this.mapReference.ghostRefs[0];
                     this.targetTile = [
@@ -175,11 +185,13 @@ class ghost extends character {
         }
         // Time to leave the house!
         else if (this.mapReference.foodEaten >= this.freeFromHouseThreshold && this.danceMovesToGo <= 0) {
+            // Free from the house, begin regular activity
             if (Math.abs(this.column - this.houseExit[0]) + Math.abs(this.row - this.houseExit[1]) === 0) {
                 this.freeFromHouse=true;
                 this.newTile();
                 super.doUpdate();
             }
+            // Move to leave the house
             else if (Math.abs(this.column - this.houseExit[0]) >= this.stepSize) {
                 this.step([Math.sign(this.houseExit[0] - this.column), 0]);
             }
@@ -204,6 +216,7 @@ class ghost extends character {
         }
     }
 
+    // Reverse direction
     reverseDirection() {
         this.currentDirection = this.currentDirection.map(x=>-x);
         this.newTile();

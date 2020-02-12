@@ -49,9 +49,17 @@ class character {
         }
     }
 
-    // Most new tile logic is specific to ghosts and the player, EXCEPT for taking this opportunity to check for collisions between the player and the ghosts. Do so here.
+    // Code to run every time a character enters a new tile
     newTile() {
+        // Is there a collision between the player and the ghosts?
         this.mapReference.playerRef.checkGhostCollision();
+        // How fast should the character go?
+        this.determineSpeedFactor();
+    }
+
+    // Stub, to be overridden by ghost and player
+    determineSpeedFactor() {
+        this.speedFactor=1;
     }
 
     // Method to step in a direction. Includes checks for obstacles
