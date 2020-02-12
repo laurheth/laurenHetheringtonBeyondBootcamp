@@ -64,22 +64,25 @@ class ghost extends character {
     // Determine the next direction to travel in
     determineNextDirection() {
         this.chooseTarget();
+        const startPosition = [Math.round(this.column), Math.round(this.row)];
+        const targetPosition = this.targetTile.map(x=>Math.round(x));
         const possibleDirections = [[1,0],[-1,0]];
-        if (this.mapReference.checkVerticalMovementAllowed(this.column, this.row) || this.captured) {
+        if (this.mapReference.checkVerticalMovementAllowed(...startPosition) || this.captured) {
             possibleDirections.push([0,1]);
             possibleDirections.push([0,-1]);
         }
         const directionDistances = possibleDirections.map((direction) => {
+            const exitPosition = startPosition.map((x,i) => x + direction[i]);
             // If direction = -currentDirection, it's invalid. Cannot reverse except for during AI state change
             if ((Math.abs(direction[0] + this.currentDirection[0]) + Math.abs(direction[1] + this.currentDirection[1])) === 0) {
                 return Infinity;
             }
             // If direction is blocked, cannot go that way
-            else if (!this.mapReference.checkCollision(this.column + direction[0], this.row + direction[1])) {
+            else if (!this.mapReference.checkCollision(...exitPosition)) {
                 return Infinity;
             }
             else {
-                return Math.abs(this.column + direction[0] - this.targetTile[0])**2 + Math.abs(this.row + direction[1] - this.targetTile[1])**2;
+                return Math.abs(exitPosition[0] - targetPosition[0])**2 + Math.abs(exitPosition[1] - targetPosition[1])**2;
             }
         });
 
