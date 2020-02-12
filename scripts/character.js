@@ -36,13 +36,12 @@ class character {
     // Note, I'm going by a column-first convention; since it corresponds to X coordinates.
     moveTo(column, row) {
         [this.column, this.row] = this.mapReference.keepOnMap([column, row]);
-        // console.log(column, row);
 
         const position = this.mapReference.elementPosition(this.column, this.row);
         this.element.style.left = `${position[0]}%`;
         this.element.style.top = `${position[1]}%`;
 
-        // New tile, do some new tile logic
+        // Check if the character has entered a new tile. If so, do some new tile logic
         const newTileIndex = this.mapReference.tileIndex(this.column,this.row);
         if (newTileIndex !== this.tileIndex) {
             this.tileIndex = newTileIndex;
@@ -50,9 +49,9 @@ class character {
         }
     }
 
-    // this is a stub. New tile logic is specific to ghosts and the player
+    // Most new tile logic is specific to ghosts and the player, EXCEPT for taking this opportunity to check for collisions between the player and the ghosts. Do so here.
     newTile() {
-        // do nothing
+        this.mapReference.playerRef.checkGhostCollision();
     }
 
     // Method to step in a direction. Includes checks for obstacles

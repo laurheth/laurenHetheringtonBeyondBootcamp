@@ -57,6 +57,9 @@ class ghost extends character {
             this.speedFactor = this.tunnelSpeedFactor;
             return;
         }
+
+        super.newTile();
+
         // Determine current speed factor
         if (this.captured) {
             this.speedFactor = 1.5;
@@ -210,7 +213,18 @@ class ghost extends character {
         this.makeAfraid(false);
         this.moveTo(...this.initialLocation);
         this.freeFromHouse=false;
-        this.danceMovesToGo=6;
+        if (this.ghostType === 'red') {
+            this.danceMovesToGo=-1;
+        }
+        else if (this.ghostType === 'pink') {
+            this.danceMovesToGo=6;
+        }
+        else if (this.ghostType === 'blue') {
+            this.danceMovesToGo=12;
+        }
+        else {
+            this.danceMovesToGo=18;
+        }
         this.scatterMode=true;
     }
 
