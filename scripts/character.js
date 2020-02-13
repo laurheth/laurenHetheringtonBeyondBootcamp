@@ -1,6 +1,6 @@
 // code generic to characters
 class character {
-    constructor(mapReference, startColumn, startRow, timeInterval) {
+    constructor(mapReference, startColumn, startRow) {
         this.mapReference = mapReference; // reference to the game map object; we will need to use it a lot
 
         // Create dom element for the character
@@ -22,11 +22,8 @@ class character {
         // Move to start position
         this.moveTo(startColumn, startRow);
 
-        // set stepsize based on time interval
-        // assumes 1 tile per second as a starting default
-        this.stepSize = timeInterval;
-        // Remember the time interval
-        this.timeInterval = timeInterval;
+        // Base speed in tiles per second, which will be modified by various speed factors later.
+        this.baseSpeed = 10;
 
         // Speed factor, to adjust for various circumstances
         this.speedFactor = 1;
@@ -68,13 +65,12 @@ class character {
 
     // Method to step in a direction. Includes checks for obstacles
     // Returns true on a successful step, and false on an unsuccessful or incomplete step.
-    step(direction,ignoreCollisions=false) {
+    step(direction,timeInterval,ignoreCollisions=false) {
 
-        const stepSize = this.speedFactor * this.stepSize;
+        const stepSize = this.speedFactor * this.baseSpeed * timeInterval;
         // check if the current position is even valid. If it's not, honestly, just let the step happen, something is fucked up. Let 👏 them 👏 be 👏 free!
         if (ignoreCollisions || !this.mapReference.checkCollision(this.column,this.row)) {
             this.moveTo(this.column + direction[0]*stepSize, this.row + direction[1]*stepSize);
-            this.elementDirection(direction);
             return true;
         }
 
@@ -122,9 +118,6 @@ class character {
         // Update character position
         this.moveTo(newPosition[0], newPosition[1]);
 
-        // Update character appearance for the current direction
-        this.elementDirection(direction);
-
         this.animateMovement(successfulStep);
 
         return successfulStep;
@@ -155,19 +148,20 @@ class character {
         }
     }
 
-    doUpdate() {
+    doUpdate(timeInterval) {
         // If nextDirection is nonzero, give it a try
         if (this.nextDirection.some((axis)=>axis)) {
-            if(this.step([...this.nextDirection])) {
+            if(this.step([...this.nextDirection],timeInterval)) {
                 // nextDirection is now the current direction
                 this.currentDirection = [...this.nextDirection];
                 this.nextDirection = [0,0];
+                this.elementDirection(this.currentDirection);
                 return;
             }
         }
         // if any of the directions are non-zero
         if (this.currentDirection.some((axis)=>axis)) {
-            this.step([...this.currentDirection]);
+            this.step([...this.currentDirection],timeInterval);
         }
     }
 }

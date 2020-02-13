@@ -3,7 +3,6 @@ import character from './character.js';
 class player extends character {
     constructor(mapReference, startColumn, startRow, timeInterval) {
         super(mapReference, startColumn, startRow, timeInterval);
-        this.stepSize = 10 * timeInterval;
         this.setSpeedFactors();
         this.poweredUp=false;
         this.poweredUpTimer = 0;
@@ -84,10 +83,10 @@ class player extends character {
         }
     }
 
-    doUpdate() {
-        super.doUpdate();
+    doUpdate(timeInterval) {
+        super.doUpdate(timeInterval);
         if (this.poweredUp) {
-            this.poweredUpTimer -= this.timeInterval;
+            this.poweredUpTimer -= timeInterval;
             if (this.poweredUpTimer <= 0) {
                 this.poweredUpTimer=0;
                 this.powerDown();

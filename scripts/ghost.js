@@ -1,9 +1,8 @@
 import character from './character.js';
 
 class ghost extends character {
-    constructor(mapReference, startColumn, startRow, timeInterval, ghostType) {
-        super(mapReference, startColumn, startRow, timeInterval);
-        this.stepSize = 10 * timeInterval;
+    constructor(mapReference, startColumn, startRow, ghostType) {
+        super(mapReference, startColumn, startRow);
         this.targetTile = [0,0];
         this.ghostType = ghostType;
 
@@ -33,10 +32,10 @@ class ghost extends character {
                 this.scatterTile = [0, 0];
                 break;
             case 'red':
-                this.scatterTile = [this.mapReference.dimensions[0]-1,0];
+                this.scatterTile = [this.mapReference.dimensions[0],0];
                 break;
             case 'orange':
-                this.scatterTile = [0, this.mapReference.dimensions[1]-1];
+                this.scatterTile = [-1, this.mapReference.dimensions[1]-1];
                 break;
             case 'blue':
                 this.scatterTile = [this.mapReference.dimensions[0]-1, this.mapReference.dimensions[1]-1];
@@ -66,7 +65,7 @@ class ghost extends character {
         this.chooseTarget();
         const startPosition = [Math.round(this.column), Math.round(this.row)];
         const targetPosition = this.targetTile.map(x=>Math.round(x));
-        console.log(this.ghostType, ...targetPosition);
+
         const possibleDirections = [[1,0],[-1,0]];
         if (this.mapReference.checkVerticalMovementAllowed(...startPosition) || this.captured) {
             possibleDirections.push([0,1]);
@@ -136,7 +135,7 @@ class ghost extends character {
         // Has been captured, return home!
         if (this.captured) {
             this.targetTile = this.houseExit;
-            if ((Math.abs(this.column - this.houseExit[0]) + Math.abs(this.row - this.houseExit[1])) < 2*this.stepSize * this.speedFactor) {
+            if ((Math.abs(this.column - this.houseExit[0]) + Math.abs(this.row - this.houseExit[1])) < 1) {
                 this.release();
             }
         }
@@ -182,10 +181,10 @@ class ghost extends character {
     }
 
     // Update logic, mainly for escaping from the house
-    doUpdate() {
+    doUpdate(timeInterval) {
         // Do normal activity
         if (this.freeFromHouse) {
-            super.doUpdate();
+            super.doUpdate(timeInterval);
         }
         // Time to leave the house!
         else if (this.mapReference.foodEaten >= this.freeFromHouseThreshold && this.danceMovesToGo <= 0) {
@@ -193,14 +192,14 @@ class ghost extends character {
             if (Math.abs(this.column - this.houseExit[0]) + Math.abs(this.row - this.houseExit[1]) === 0) {
                 this.freeFromHouse=true;
                 this.newTile();
-                super.doUpdate();
+                super.doUpdate(timeInterval);
             }
             // Move to leave the house
-            else if (Math.abs(this.column - this.houseExit[0]) >= this.stepSize) {
-                this.step([Math.sign(this.houseExit[0] - this.column), 0]);
+            else if (Math.abs(this.column - this.houseExit[0]) >= this.baseSpeed * timeInterval) {
+                this.step([Math.sign(this.houseExit[0] - this.column), 0], timeInterval);
             }
-            else if (Math.abs(this.row - this.houseExit[1]) >= this.stepSize) {
-                this.step([0, Math.sign(this.houseExit[1] - this.row)]);
+            else if (Math.abs(this.row - this.houseExit[1]) >= this.baseSpeed * timeInterval) {
+                this.step([0, Math.sign(this.houseExit[1] - this.row)], timeInterval);
             }
             else {
                 this.moveTo(this.houseExit[0], this.houseExit[1]);
@@ -216,7 +215,7 @@ class ghost extends character {
                 this.houseDanceDirection=1;
                 this.danceMovesToGo--;
             }
-            this.step([0, this.houseDanceDirection],true);
+            this.step([0, this.houseDanceDirection],timeInterval, true);
         }
     }
 
@@ -243,6 +242,7 @@ class ghost extends character {
             this.danceMovesToGo=18;
         }
         this.scatterMode=true;
+        this.currentDirection=[0,0];
     }
 
     makeAfraid(afraid) {

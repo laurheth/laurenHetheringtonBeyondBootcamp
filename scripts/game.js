@@ -4,8 +4,9 @@ import player from './player.js';
 import ghost from './ghost.js';
 
 const game = {
-    timeInterval: 1/30,
+    targetTimeInterval: 1/30, // Target time interval, but in practice, is not to level of precision we need.
     timePassed: 0,
+    currentTime: 0,
     gamePlan: ['chase', Infinity],
     gameLoop: null,
     level: 1,
@@ -20,7 +21,7 @@ const game = {
         gameMap.init();
         
         // Initialize the player
-        this.pacLauren = new player(gameMap,13.5,23,this.timeInterval);
+        this.pacLauren = new player(gameMap,13.5,23);
         
         // Store a reference for the player
         gameMap.playerRef = this.pacLauren;
@@ -29,16 +30,16 @@ const game = {
 
         
         // Initialize ghosts
-        const redGhost = new ghost(gameMap, 13.5,11, this.timeInterval,'red');
+        const redGhost = new ghost(gameMap, 13.5,11,'red');
         redGhost.danceMovesToGo = -1;
         
         gameMap.ghostRefs[0] = redGhost;
         
-        const blueGhost = new ghost(gameMap, 11.5,14, this.timeInterval,'blue');
+        const blueGhost = new ghost(gameMap, 11.5,14,'blue');
         blueGhost.freeFromHouseThreshold=30;
-        const orangeGhost = new ghost(gameMap, 15.5,14, this.timeInterval,'orange');
+        const orangeGhost = new ghost(gameMap, 15.5,14,'orange');
         orangeGhost.freeFromHouseThreshold=gameMap.foodTotal / 3;
-        const pinkGhost = new ghost(gameMap, 13.5,14, this.timeInterval,'pink');
+        const pinkGhost = new ghost(gameMap, 13.5,14,'pink');
         
         gameMap.ghostRefs[1]=pinkGhost;
         gameMap.ghostRefs[2]=blueGhost;
@@ -55,23 +56,31 @@ const game = {
         this.livesElement = document.getElementById('lives');
         this.scoreElement = document.getElementById('score');
 
+        // Initialize the current time
+        this.currentTime = this.getSeconds();
         
         // Setup the main game loop
-        this.gameLoop = setInterval(() => this.mainGameLoop(), 1000 * this.timeInterval);
+        this.gameLoop = setInterval(() => this.mainGameLoop(), 1000 * this.targetTimeInterval);
     },
 
     // Function that runs every frame of the game
     mainGameLoop() {
+
+        // Update the current time, and store the time interval since the last frame.
+        const updatedTime = this.getSeconds();
+        const timeInterval = updatedTime - this.currentTime;
+        this.currentTime = updatedTime;
+
         if (this.paused) {
             return;
         }
         // advance the clock
-        this.timePassed+=this.timeInterval;
+        this.timePassed+=timeInterval;
 
     
         // Run update method for player, and all ghosts
-        this.pacLauren.doUpdate();
-        gameMap.ghostRefs.forEach((ghost)=>ghost.doUpdate());
+        this.pacLauren.doUpdate(timeInterval);
+        gameMap.ghostRefs.forEach((ghost)=>ghost.doUpdate(timeInterval));
 
         // If enough time has gone by, set the next game mode on the agenda
         if (this.timePassed > this.gamePlan[0][1]) {
@@ -282,6 +291,11 @@ const game = {
         }
 
         gameMap.ghostRefs[0].elroyMode = elroyNumber;
+    },
+
+    // Returns the current time in seconds, with some decimal spaces.
+    getSeconds() {
+        return ((new Date).getTime())/1000;
     }
 }
 
