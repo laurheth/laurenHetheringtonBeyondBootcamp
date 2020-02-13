@@ -269,7 +269,7 @@ $legStep: 100% / 5;
     &.afraid {
         background: blue;
         &.endWarning {
-            animation: flash 0.5s steps(1) infinite;
+            animation: ghostWalk alternate linear 0.6s infinite, flash 0.5s steps(1) infinite;
         }
     }
     &.captured {

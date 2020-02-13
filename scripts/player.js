@@ -50,6 +50,11 @@ class player extends character {
         }
     }
 
+    setPowerUpTimes(powerTime, warningTime) {
+        this.powerUpDuration = powerTime;
+        this.powerUpEndWarningTime = warningTime;
+    }
+
     powerUp() {
         this.poweredUp=true;
         this.poweredUpTimer += this.powerUpDuration;

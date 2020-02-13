@@ -4,7 +4,7 @@ import player from './player.js';
 import ghost from './ghost.js';
 
 const game = {
-    targetTimeInterval: 1/30, // Target time interval, but in practice, is not to level of precision we need.
+    targetTimeInterval: 1/60, // Target time interval, but in practice, is not to level of precision we need.
     timePassed: 0,
     currentTime: 0,
     gamePlan: ['chase', Infinity],
@@ -68,8 +68,11 @@ const game = {
 
         // Update the current time, and store the time interval since the last frame.
         const updatedTime = this.getSeconds();
-        const timeInterval = updatedTime - this.currentTime;
+        // Record time interval, but make sure it has an upper limit to prevent wonky behavior like walking through walls
+        const timeInterval = Math.min(updatedTime - this.currentTime, 3*this.targetTimeInterval);
         this.currentTime = updatedTime;
+
+
 
         if (this.paused) {
             return;
@@ -275,7 +278,7 @@ const game = {
             elroyNumber = 80;
         }
         else if (this.level >= 9) {
-            elroyMumber = 60;
+            elroyNumber = 60;
         }
         else if (this.level >= 6) {
             elroyNumber = 50;
@@ -291,6 +294,42 @@ const game = {
         }
 
         gameMap.ghostRefs[0].elroyMode = elroyNumber;
+
+        // How long do power pellets last?
+        switch(this.level) {
+            case 1:
+                gameMap.playerRef.setPowerUpTimes(6,2.5);
+                break;
+            case 2:
+            case 6:
+            case 10:
+                gameMap.playerRef.setPowerUpTimes(5,2.5);
+                break;
+            case 3:
+                gameMap.playerRef.setPowerUpTimes(4,2.5);
+                break;
+            case 4:
+            case 14:
+                gameMap.playerRef.setPowerUpTimes(3,2.5);
+                break;
+            case 5:
+            case 7:
+            case 8:
+            case 11:
+                gameMap.playerRef.setPowerUpTimes(2.5,2.5);
+                break;
+            case 9:
+            case 12:
+            case 13:
+            case 15:
+            case 16:
+            case 18:
+                gameMap.playerRef.setPowerUpTimes(1.5,1.5);
+                break;
+            default:
+                gameMap.playerRef.setPowerUpTimes(0,0);
+                break;
+        }
     },
 
     // Returns the current time in seconds, with some decimal spaces.
