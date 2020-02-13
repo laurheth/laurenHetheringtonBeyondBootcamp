@@ -10,7 +10,7 @@ const game = {
     currentTime: 0,
     gamePlan: ['chase', Infinity],
     gameLoop: null,
-    level: 100,
+    level: 1,
     pacLauren: null,
     paused: false,
     score: 0,
