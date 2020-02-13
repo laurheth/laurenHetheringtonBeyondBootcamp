@@ -12,6 +12,7 @@ class player extends character {
         this.captureGhostPointValue = 200;
         this.addToScore=null;
         this.dieFunction=null;
+        this.element.classList.add('player');
     }
 
     setSpeedFactors(baseSpeed=0.8, powerUpSpeed=0.9, foodSpeed=0.87) {
@@ -104,7 +105,7 @@ class player extends character {
         this.mapReference.ghostRefs.filter(ghost=>ghost).forEach((ghost) => {
             if (Math.round(ghost.column) === Math.round(this.column) &&
             Math.round(ghost.row) === Math.round(this.row)) {
-                if (ghost.afraid) {
+                if (ghost.afraid || ghost.captured) {
                     if (!ghost.captured) {
                         if (this.addToScore) {
                             this.addToScore(this.captureGhostPointValue);

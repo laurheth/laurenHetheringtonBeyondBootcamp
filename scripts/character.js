@@ -5,7 +5,7 @@ class character {
 
         // Create dom element for the character
         this.element = document.createElement('div');
-        this.element.classList.add('character');
+        this.element.classList.add('character','movingRight');
 
         // Attach to the game board
         this.mapReference.gameBoard.appendChild(this.element);
@@ -30,6 +30,10 @@ class character {
 
         // Speed factor, to adjust for various circumstances
         this.speedFactor = 1;
+
+        // Set the element size
+        this.element.style.width = `${1.25*this.mapReference.elementWidth()}%`;
+        this.element.style.height = `${1.25*this.mapReference.elementHeight()}%`;
     }
 
     // Method to move a character to a specific location.
@@ -65,10 +69,12 @@ class character {
     // Method to step in a direction. Includes checks for obstacles
     // Returns true on a successful step, and false on an unsuccessful or incomplete step.
     step(direction,ignoreCollisions=false) {
+
         const stepSize = this.speedFactor * this.stepSize;
         // check if the current position is even valid. If it's not, honestly, just let the step happen, something is fucked up. Let 👏 them 👏 be 👏 free!
         if (ignoreCollisions || !this.mapReference.checkCollision(this.column,this.row)) {
             this.moveTo(this.column + direction[0]*stepSize, this.row + direction[1]*stepSize);
+            this.elementDirection(direction);
             return true;
         }
 
@@ -112,8 +118,41 @@ class character {
                 }
             });
         }
+
+        // Update character position
         this.moveTo(newPosition[0], newPosition[1]);
+
+        // Update character appearance for the current direction
+        this.elementDirection(direction);
+
+        this.animateMovement(successfulStep);
+
         return successfulStep;
+    }
+
+    elementDirection(direction) {
+        this.element.classList.remove('movingRight', 'movingLeft','movingUp', 'movingDown');
+        if (direction[1]>0) {
+            this.element.classList.add('movingDown');
+        }
+        else if (direction[1]<0) {
+            this.element.classList.add('movingUp');
+        }
+        else if (direction[0]<0) {
+            this.element.classList.add('movingLeft');
+        }
+        else {
+            this.element.classList.add('movingRight');
+        }
+    }
+
+    animateMovement(animate) {
+        if (animate) {
+            this.element.classList.add('moving');
+        }
+        else {
+            this.element.classList.remove('moving');
+        }
     }
 
     doUpdate() {

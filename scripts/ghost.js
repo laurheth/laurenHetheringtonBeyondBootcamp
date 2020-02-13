@@ -30,10 +30,10 @@ class ghost extends character {
         switch(ghostType) {
             default:
             case 'pink':
-                this.scatterTile = [1, 0];
+                this.scatterTile = [0, 0];
                 break;
             case 'red':
-                this.scatterTile = [this.mapReference.dimensions[0]-2,0];
+                this.scatterTile = [this.mapReference.dimensions[0]-1,0];
                 break;
             case 'orange':
                 this.scatterTile = [0, this.mapReference.dimensions[1]-1];
@@ -66,6 +66,7 @@ class ghost extends character {
         this.chooseTarget();
         const startPosition = [Math.round(this.column), Math.round(this.row)];
         const targetPosition = this.targetTile.map(x=>Math.round(x));
+        console.log(this.ghostType, ...targetPosition);
         const possibleDirections = [[1,0],[-1,0]];
         if (this.mapReference.checkVerticalMovementAllowed(...startPosition) || this.captured) {
             possibleDirections.push([0,1]);
@@ -270,14 +271,16 @@ class ghost extends character {
 
     capture() {
         this.captured=true;
+        this.makeAfraid(false);
+        this.element.classList.add('captured');
     }
 
     release() {
         this.captured=false;
-        this.makeAfraid(false);
         this.houseDanceDirection = 1;
         this.danceMovesToGo = 1;
         this.freeFromHouse=false;
+        this.element.classList.remove('captured');
     }
 }
 

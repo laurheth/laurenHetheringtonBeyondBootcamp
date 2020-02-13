@@ -4,7 +4,7 @@ import player from './player.js';
 import ghost from './ghost.js';
 
 const game = {
-    timeInterval: 1/60,
+    timeInterval: 1/30,
     timePassed: 0,
     gamePlan: ['chase', Infinity],
     gameLoop: null,
@@ -94,6 +94,10 @@ const game = {
         if (gameMap.foodEaten >= gameMap.foodTotal) {
             this.victory();
         }
+
+        if (this.paused) {
+            this.runAnimations(false);
+        }
     },
 
     nextLevel() {
@@ -114,7 +118,7 @@ const game = {
     },
 
     playerCaptured() {
-        this.paused = true;
+        this.pauseGame();
         this.addToLives(-1);
         if (this.lives >= 0) {
             setTimeout(()=>this.newLife(),2000);
@@ -148,7 +152,7 @@ const game = {
     },
     
     getReady() {
-        this.paused=true;
+        this.pauseGame();
         document.querySelector('#game .messages p').textContent = "Ready!";
         document.querySelector('#game .messages').classList.remove('hide');
         setTimeout(()=>this.commencePlay(),5000);
@@ -160,13 +164,23 @@ const game = {
     },
 
     commencePlay() {
-        this.paused = false;
+        this.pauseGame(false);
         document.querySelector('#game .messages').classList.add('hide');
     },
 
     victory() {
-        this.paused = true;
+        this.pauseGame();
         setTimeout(()=>this.nextLevel(),2000);
+    },
+
+    pauseGame(pause=true) {
+        this.paused = pause;
+        this.runAnimations(!pause);
+    },
+
+    runAnimations(run) {
+        gameMap.ghostRefs.forEach(ghost=>ghost.animateMovement(run));
+        gameMap.playerRef.animateMovement(false);
     },
 
     // generate properties for the current level. This includes the game plan, ghost speed, player speed, etc. Everything that is level-specific

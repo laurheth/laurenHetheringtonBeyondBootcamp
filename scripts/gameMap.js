@@ -195,6 +195,15 @@ const gameMap = {
     // converts game-logic row and column into top & left percentages
     elementPosition(column, row) {
         return [100 * (column+0.5) / this.dimensions[0] , 100 * (row+0.5) / this.dimensions[1]];
+    },
+
+    // Returns the width of a single grid tile relative to the entire board
+    elementWidth() {
+        return 100 / this.dimensions[0];
+    },
+
+    elementHeight() {
+        return 100 / this.dimensions[1];
     }
 }
 
