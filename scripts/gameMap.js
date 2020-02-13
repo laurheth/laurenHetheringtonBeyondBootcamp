@@ -6,16 +6,42 @@ class tile {
         this.element = element;
         this.element.classList.add('tile');
         this.passable = true; // is this tile passable?
-        this.junction = false; // is this a junction? Used for ghost AI
+        this.wall = false;
         this.noUpwardsGhosts = false; // some tiles ghosts cannot decide to go up
         this.food=false;
         this.powerUp=false;
         this.tunnel=false;
         this.horizontalGhostMovementOnly=false;
     }
-    makeWall() {
+    makeWall(symbol) {
         this.element.classList.add('wall');
         this.passable=false;
+        this.wall=true;
+        switch(symbol) {
+            default:
+                break;
+            case '╔':
+                this.element.classList.add('topLeftCorner');
+                break;
+            case '╗':
+                this.element.classList.add('topRightCorner');
+                break;
+            case '╚':
+                this.element.classList.add('bottomLeftCorner');
+                break;
+            case '╝':
+                this.element.classList.add('bottomRightCorner');
+                break;
+            case '║':
+                this.element.classList.add('vertical');
+                break;
+            case '═':
+                this.element.classList.add('horizontal');
+                break;
+        }
+    }
+    makeDoor() {
+        this.element.classList.add('door');
     }
     addFood() {
         this.element.classList.add('food');
@@ -88,11 +114,14 @@ const gameMap = {
         mapData.forEach((mapRow,i) => {
             mapRow.split('').forEach((mapTile,j) => {
                 const thisTile = this.tiles[i * this.dimensions[0] + j];
-                if (mapTile === '#' ) {
-                    thisTile.makeWall();
+                if ('╔╗╚╝║═'.includes(mapTile)) {
+                    thisTile.makeWall(mapTile);
                 }
                 else if (mapTile === '_' || mapTile === 'H') {
                     thisTile.passable=false;
+                    if (mapTile === '_') {
+                        thisTile.makeDoor();
+                    }
                 }
                 else if (mapTile === '.' || mapTile === 'V') {
                     this.foodTotal++;

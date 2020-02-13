@@ -201,9 +201,6 @@ legend, button::-moz-focus-inner, input::-moz-focus-inner {
   padding-bottom: 100%;
   background: black;
 }
-.tile.wall {
-  background: blue;
-}
 .tile.food {
   position: relative;
 }
@@ -229,6 +226,72 @@ legend, button::-moz-focus-inner, input::-moz-focus-inner {
   border-radius: 50%;
   top: calc(50% - 60% / 2);
   left: calc(50% - 60% / 2);
+}
+.tile.wall {
+  position: relative;
+}
+.tile.wall.topLeftCorner::after, .tile.wall.topRightCorner::after, .tile.wall.bottomLeftCorner::after, .tile.wall.bottomRightCorner::after {
+  content: "";
+  position: absolute;
+  width: calc(50% - 1.5px);
+  height: calc(50% - 1.5px);
+  z-index: 10;
+  border-color: blue;
+  border-width: 3px;
+}
+.tile.wall.topLeftCorner::after {
+  bottom: 0;
+  right: 0;
+  border-style: solid none none solid;
+  border-radius: 50% 0 0 0;
+}
+.tile.wall.topRightCorner::after {
+  bottom: 0;
+  left: 0;
+  border-style: solid solid none none;
+  border-radius: 0 50% 0 0;
+}
+.tile.wall.bottomLeftCorner::after {
+  top: 0;
+  right: 0;
+  border-style: none none solid solid;
+  border-radius: 0 0 0 50%;
+}
+.tile.wall.bottomRightCorner::after {
+  top: 0;
+  left: 0;
+  border-style: none solid solid none;
+  border-radius: 0 0 50% 0;
+}
+.tile.wall.horizontal::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 1.5px);
+  bottom: calc(50% - 1.5px);
+  background: blue;
+}
+.tile.wall.vertical::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  top: 0;
+  left: calc(50% - 1.5px);
+  right: calc(50% - 1.5px);
+  background: blue;
+}
+.tile.door {
+  position: relative;
+}
+.tile.door::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 1.5px);
+  bottom: calc(50% - 1.5px);
+  background: hotpink;
 }
 
 .game {

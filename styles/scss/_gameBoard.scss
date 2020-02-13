@@ -10,13 +10,13 @@
     }
 }
 
+$halfBorder: 1.5px;
+$borderRadius: 50%;
+
 .tile {
     width: 100%;
     padding-bottom: 100%;
     background: black;
-    &.wall {
-        background: blue;
-    }
     &.food {
         position: relative;
         &::before {
@@ -41,6 +41,76 @@
             border-radius: 50%;
             top: calc(50% - 60% / 2);
             left: calc(50% - 60% / 2);
+        }
+    }
+    &.wall {
+        position: relative;
+        &.topLeftCorner::after, &.topRightCorner::after, &.bottomLeftCorner::after, &.bottomRightCorner::after {
+            content: '';
+            position: absolute;
+            width: calc(50% - #{$halfBorder});
+            height: calc(50% - #{$halfBorder});
+            z-index: 10;
+            border-color: blue;
+            border-width: 2*$halfBorder;
+        }
+    
+    
+        &.topLeftCorner::after {
+            bottom: 0;
+            right: 0;
+            border-style: solid none none solid;
+            border-radius: $borderRadius 0 0 0;
+        }
+        &.topRightCorner::after {
+            bottom: 0;
+            left: 0;
+            border-style: solid solid none none;
+            border-radius: 0 $borderRadius 0 0;
+        }
+        &.bottomLeftCorner::after {
+            top: 0;
+            right: 0;
+            border-style: none none solid solid;
+            border-radius: 0 0 0 $borderRadius;
+        }
+        &.bottomRightCorner::after {
+            top: 0;
+            left: 0;
+            border-style: none solid solid none;
+            border-radius: 0 0 $borderRadius 0;
+        }
+    
+        &.horizontal::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: calc(50% - #{$halfBorder});
+            bottom: calc(50% - #{$halfBorder});
+            background: blue;
+        }
+    
+        &.vertical::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            top: 0;
+            left: calc(50% - #{$halfBorder});
+            right: calc(50% - #{$halfBorder});
+            background: blue;
+        }
+    }
+    &.door {
+        position: relative;
+        &::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: calc(50% - #{$halfBorder});
+            bottom: calc(50% - #{$halfBorder});
+            background: hotpink;
         }
     }
 }
