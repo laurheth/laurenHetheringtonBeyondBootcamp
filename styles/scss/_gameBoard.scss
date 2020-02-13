@@ -12,18 +12,20 @@
 
 @keyframes munch {
     0% {
-        transform: scaleY(100%) rotate(45deg);
+        clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 0 100%, 0 0%, 100% 0%, 100% 0);
     }
     50% {
-        transform: scaleY(0%) rotate(45deg);
+        clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 0 100%, 0 0%, 100% 0%, 100% 50%);
     }
     100% {
-        transform: scaleY(100%) rotate(45deg);
+        clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 0 100%, 0 0%, 100% 0%, 100% 0);
     }
 }
 
 $halfBorder: 1.5px;
 $borderRadius: 50%;
+// $cornerCalc: ;
+
 
 .tile {
     width: 100%;
@@ -57,61 +59,73 @@ $borderRadius: 50%;
     }
     &.wall {
         position: relative;
-        &.topLeftCorner::after, &.topRightCorner::after, &.bottomLeftCorner::after, &.bottomRightCorner::after {
-            content: '';
-            position: absolute;
-            width: calc(50% - #{$halfBorder});
-            height: calc(50% - #{$halfBorder});
-            z-index: 10;
+
+        &.topLeftCorner, &.topRightCorner, &.bottomLeftCorner, &.bottomRightCorner {
+            width: calc(50% + #{$halfBorder});
+            padding-bottom: calc(50% - #{$halfBorder});
             border-color: blue;
             border-width: 2*$halfBorder;
         }
-    
-    
-        &.topLeftCorner::after {
-            bottom: 0;
-            right: 0;
+        
+        &.topLeftCorner {
+            margin: calc(50% - #{$halfBorder}) 0 0 calc(50% - #{$halfBorder});
             border-style: solid none none solid;
             border-radius: $borderRadius 0 0 0;
         }
-        &.topRightCorner::after {
-            bottom: 0;
-            left: 0;
+
+        &.topRightCorner {
+            margin: calc(50% - #{$halfBorder}) calc(50% - #{$halfBorder}) 0 0;
             border-style: solid solid none none;
             border-radius: 0 $borderRadius 0 0;
         }
-        &.bottomLeftCorner::after {
-            top: 0;
-            right: 0;
-            border-style: none none solid solid;
-            border-radius: 0 0 0 $borderRadius;
-        }
-        &.bottomRightCorner::after {
-            top: 0;
-            left: 0;
+
+        &.bottomRightCorner {
             border-style: none solid solid none;
             border-radius: 0 0 $borderRadius 0;
+            margin: 0 calc(50% - #{$halfBorder}) calc(50% - #{$halfBorder}) 0;
         }
-    
-        &.horizontal::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: calc(50% - #{$halfBorder});
-            bottom: calc(50% - #{$halfBorder});
+
+        &.bottomLeftCorner {
+            border-style: none none solid solid;
+            border-radius: 0 0 0 $borderRadius;
+            margin: 0 0 calc(50% - #{$halfBorder}) calc(50% - #{$halfBorder});
+        }
+
+        &.horizontal, &.vertical {
             background: blue;
         }
-    
-        &.vertical::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            top: 0;
-            left: calc(50% - #{$halfBorder});
-            right: calc(50% - #{$halfBorder});
-            background: blue;
+
+        &.horizontal {
+            height: 2*$halfBorder;
+            padding: 0;
+            margin: calc(50% - #{$halfBorder}) 0 calc(50% - #{$halfBorder}) 0;
         }
+
+        &.vertical {
+            width: 2*$halfBorder;
+            padding: 0;
+            margin: 0 calc(50% - #{$halfBorder}) 0 calc(50% - #{$halfBorder});
+        }
+    
+        // &.horizontal::after {
+        //     content: '';
+        //     position: absolute;
+        //     left: 0;
+        //     right: 0;
+        //     top: calc(50% - #{$halfBorder});
+        //     bottom: calc(50% - #{$halfBorder});
+        //     background: blue;
+        // }
+    
+        // &.vertical::after {
+        //     content: '';
+        //     position: absolute;
+        //     bottom: 0;
+        //     top: 0;
+        //     left: calc(50% - #{$halfBorder});
+        //     right: calc(50% - #{$halfBorder});
+        //     background: blue;
+        // }
     }
     &.door {
         position: relative;
@@ -176,18 +190,8 @@ $legStep: 100% / 5;
     &.player {
         background: yellow;
         border-radius: 50%;
-        &::after {
-            content: "";
-            background:black;
-            z-index: 10;
-            position: absolute;
-            transform: scaleY(100%) rotate(45deg);
-            width: 50%;
-            height: 50%;
-            right: -10%;
-            top: 25%;
-        }
-        &.moving::after {
+        clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 0 100%, 0 0%, 100% 0%, 100% 0);
+        &.moving {
             animation: munch 0.3s linear infinite;
         }
         &.movingLeft {

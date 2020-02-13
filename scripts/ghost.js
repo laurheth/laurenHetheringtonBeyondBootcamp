@@ -111,11 +111,11 @@ class ghost extends character {
             if (this.captured) {
                 this.speedFactor = 1.5;
             }
-            else if (this.afraid) {
-                this.speedFactor = this.scaredSpeedFactor;
-            }
             else if (this.mapReference.checkTunnel(this.column, this.row)) {
                 this.speedFactor = this.tunnelSpeedFactor;
+            }
+            else if (this.afraid) {
+                this.speedFactor = this.scaredSpeedFactor;
             }
             else {
                 this.speedFactor = this.baseSpeedFactor;
