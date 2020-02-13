@@ -420,3 +420,8 @@ body {
   background: transparent;
   animation: none;
 }
+
+.fruit {
+  position: absolute;
+  transform: translateX(-50%) translateY(-50%);
+}

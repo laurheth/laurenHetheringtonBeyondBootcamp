@@ -2,6 +2,7 @@
 import gameMap from './gameMap.js';
 import player from './player.js';
 import ghost from './ghost.js';
+import fruit from './fruit.js';
 
 const game = {
     targetTimeInterval: 1/60, // Target time interval, but in practice, is not to level of precision we need.
@@ -9,13 +10,16 @@ const game = {
     currentTime: 0,
     gamePlan: ['chase', Infinity],
     gameLoop: null,
-    level: 1,
+    level: 100,
     pacLauren: null,
     paused: false,
     score: 0,
     scoreElement: null,
     lives: 2,
     livesElement: null,
+    fruitThresholds: [],
+    fruitStats: ['🍒',100],
+    fruit: null,
     init() {
         // Initialize the game map
         gameMap.init();
@@ -47,6 +51,7 @@ const game = {
         
         // Setup level properties
         this.setLevelProperties();
+        this.resetFruitThreshold();
 
         // Setup the event listener
         document.onkeydown = (event) => gameMap.playerRef.getEvent(event);
@@ -102,6 +107,24 @@ const game = {
             }
         }
 
+        // Handle the fruit logic!
+        if (this.fruitThresholds.length>0 && gameMap.foodEaten > this.fruitThresholds[0]) {
+            this.addFruit();
+        }
+
+        if (this.fruit) {
+            // returns true if the fruit hasn't timed out, false otherwise
+            if (this.fruit.incrementTime(timeInterval)) {
+                if (this.fruit.checkFruitCollision([gameMap.playerRef.column, gameMap.playerRef.row])) {
+                    this.addToScore(this.fruit.getFruit());
+                    this.fruit = null;
+                }
+            }
+            else {
+                this.fruit = null;
+            }
+        }
+
         // Check if every food has been eaten. If it has, go to the next level!
         if (gameMap.foodEaten >= gameMap.foodTotal) {
             this.victory();
@@ -118,8 +141,18 @@ const game = {
         this.setLevelProperties();
         gameMap.playerRef.reset();
         this.timePassed=0;
+        this.resetFruitThreshold();
         gameMap.loadMap();
         this.getReady();
+    },
+
+    resetFruitThreshold() {
+        this.fruitThresholds = [70, 170];
+    },
+
+    addFruit() {
+        this.fruitThresholds.shift();
+        this.fruit = new fruit(this.fruitStats[0], this.fruitStats[1], gameMap);
     },
 
     newLife() {
@@ -167,6 +200,10 @@ const game = {
         this.pauseGame();
         document.querySelector('#game .messages p').textContent = "Ready!";
         document.querySelector('#game .messages').classList.remove('hide');
+        if (this.fruit) {
+            this.fruit.removeFruit();
+            this.fruit=null;
+        }
         setTimeout(()=>this.commencePlay(),5000);
     },
 
@@ -329,6 +366,31 @@ const game = {
             default:
                 gameMap.playerRef.setPowerUpTimes(0,0);
                 break;
+        }
+        // Fruits
+        if (this.level > 12) {
+            this.fruitStats = ['🔑',5000];
+        }
+        else if (this.level > 10) {
+            this.fruitStats = ['🛎',3000];
+        }
+        else if (this.level > 8) {
+            this.fruitStats = ['🚀',2000];
+        }
+        else if (this.level > 6) {
+            this.fruitStats = ['🍇',1000];
+        }
+        else if (this.level > 4) {
+            this.fruitStats = ['🍎',700];
+        }
+        else if (this.level > 2) {
+            this.fruitStats = ['🍑',500];
+        }
+        else if (this.level === 2) {
+            this.fruitStats = ['🍓',300];
+        }
+        else {
+            this.fruitStats = ['🍒',100];
         }
     },
 

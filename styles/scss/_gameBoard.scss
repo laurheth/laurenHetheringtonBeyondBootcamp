@@ -277,3 +277,8 @@ $legStep: 100% / 5;
         animation: none;
     }
 }
+
+.fruit {
+    position: absolute;
+    transform: translateX(-50%) translateY(-50%);
+}
