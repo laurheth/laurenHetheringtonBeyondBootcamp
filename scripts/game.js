@@ -135,23 +135,38 @@ const game = {
         }
     },
 
+    // Code to run to prepare the next level
     nextLevel() {
         gameMap.foodEaten=0;
         this.level++;
-        this.setLevelProperties();
-        gameMap.playerRef.reset();
-        this.timePassed=0;
+        // this.setLevelProperties();
+        // gameMap.playerRef.reset();
+        // this.timePassed=0;
         this.resetFruitThreshold();
         gameMap.loadMap();
-        this.getReady();
+        // this.getReady();
+        this.newLife();
     },
 
+    // Restart the game to level 1
+    // "Clever approach", reset score and lives, then set level to 0, then just use this.nextLevel() to get to level 1
+    restart() {
+        this.level = 0;
+        this.score=0;
+        this.lives = 2;
+        this.nextLevel();
+    },
+
+    // Food-eaten thresholds for fruit to appear
     resetFruitThreshold() {
         this.fruitThresholds = [70, 170];
     },
 
+    // Add fruit!
     addFruit() {
+        // Remove the most recent fruit threshold
         this.fruitThresholds.shift();
+        // Add the fruit
         this.fruit = new fruit(this.fruitStats[0], this.fruitStats[1], gameMap);
     },
 
@@ -163,13 +178,16 @@ const game = {
     },
 
     playerCaptured() {
-        this.pauseGame();
-        this.addToLives(-1);
-        if (this.lives >= 0) {
-            setTimeout(()=>this.newLife(),2000);
-        }
-        else {
-            this.gameOver();
+        // Only do this if the game isn't currently paused, to avoid losing multiple lives at the same time
+        if (!this.paused) {
+            this.pauseGame();
+            this.addToLives(-1);
+            if (this.lives >= 0) {
+                setTimeout(()=>this.newLife(),2000);
+            }
+            else {
+                this.gameOver();
+            }
         }
     },
 

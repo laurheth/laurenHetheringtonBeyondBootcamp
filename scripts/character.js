@@ -118,8 +118,6 @@ class character {
         // Update character position
         this.moveTo(newPosition[0], newPosition[1]);
 
-        this.animateMovement(successfulStep);
-
         return successfulStep;
     }
 
@@ -155,13 +153,18 @@ class character {
                 // nextDirection is now the current direction
                 this.currentDirection = [...this.nextDirection];
                 this.nextDirection = [0,0];
+                // Update element direction and turn on animation; a new direction has been successfully chosen!
                 this.elementDirection(this.currentDirection);
+                this.animateMovement(true);
                 return;
             }
         }
         // if any of the directions are non-zero
         if (this.currentDirection.some((axis)=>axis)) {
-            this.step([...this.currentDirection],timeInterval);
+            if(!this.step([...this.currentDirection],timeInterval)) {
+                // No new direction (demonstrated above) and the current direction has hit a wall. Character is stopping, so stop movement animation.
+                this.animateMovement(false);
+            }
         }
     }
 }

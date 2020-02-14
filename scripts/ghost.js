@@ -29,16 +29,16 @@ class ghost extends character {
         switch(ghostType) {
             default:
             case 'pink':
-                this.scatterTile = [0, 0];
+                this.scatterTile = [3, -3];
                 break;
             case 'red':
-                this.scatterTile = [this.mapReference.dimensions[0],0];
+                this.scatterTile = [this.mapReference.dimensions[0]-4,-3];
                 break;
             case 'orange':
-                this.scatterTile = [-1, this.mapReference.dimensions[1]-1];
+                this.scatterTile = [0, this.mapReference.dimensions[1]+3];
                 break;
             case 'blue':
-                this.scatterTile = [this.mapReference.dimensions[0]-1, this.mapReference.dimensions[1]-1];
+                this.scatterTile = [this.mapReference.dimensions[0]-1, this.mapReference.dimensions[1]+2];
                 break;
         }
         this.newTile();
