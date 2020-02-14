@@ -3,6 +3,7 @@ import gameMap from './gameMap.js';
 import player from './player.js';
 import ghost from './ghost.js';
 import fruit from './fruit.js';
+import touchHandler from './touchHandler.js';
 
 const game = {
     targetTimeInterval: 1/60, // Target time interval, but in practice, is not to level of precision we need.
@@ -20,6 +21,7 @@ const game = {
     fruitThresholds: [],
     fruitStats: ['🍒',100],
     fruit: null,
+    touchHandler: null,
     init() {
         // Initialize the game map
         gameMap.init();
@@ -53,17 +55,23 @@ const game = {
         this.setLevelProperties();
         this.resetFruitThreshold();
 
-        // Setup the event listener
+        // Setup the event listener for keyboard
         document.onkeydown = (event) => gameMap.playerRef.getEvent(event);
-        this.getReady();
 
+        // Event listeners for touches
+        this.touchHandler = new touchHandler(gameMap.gameBoard, (event) => gameMap.playerRef.getEvent(event));
+
+        
         // Get the elements for keeping track of score and lives
         this.livesElement = document.getElementById('lives');
         this.scoreElement = document.getElementById('score');
-
+        
         // Initialize the current time
         this.currentTime = this.getSeconds();
         
+        // Start getting ready...
+        this.getReady();
+
         // Setup the main game loop
         this.gameLoop = setInterval(() => this.mainGameLoop(), 1000 * this.targetTimeInterval);
     },

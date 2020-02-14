@@ -82,7 +82,10 @@ class ghost extends character {
                 return Infinity;
             }
             else {
-                return Math.abs(exitPosition[0] - targetPosition[0])**2 + Math.abs(exitPosition[1] - targetPosition[1])**2;
+                // You might ask, "Why do you use the square of the distance? Shouldn't you take the square root to get the true distances?"
+                // And the answer is, I don't care about the actual distances, and sqrt() is an expensive operation
+                // So I'm not going to bother with it. This works.
+                return (exitPosition[0] - targetPosition[0])**2 + (exitPosition[1] - targetPosition[1])**2;
             }
         });
 
@@ -227,6 +230,7 @@ class ghost extends character {
 
     reset() {
         this.makeAfraid(false);
+        this.release();
         this.moveTo(...this.initialLocation);
         this.freeFromHouse=false;
         if (this.ghostType === 'red') {

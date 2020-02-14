@@ -68,23 +68,31 @@ class player extends character {
     }
 
     getEvent(event) {
-        event.preventDefault();
+        let eventCaptured=true;
         switch(event.key) {
+            case 'SwipeRight':
             case 'ArrowRight':
                 this.nextDirection = [1,0];
                 break;
+            case 'SwipeLeft':
             case 'ArrowLeft':
                 this.nextDirection = [-1,0];
                 break;
+            case 'SwipeUp':
             case 'ArrowUp':
                 this.nextDirection = [0, -1];
                 break;
+            case 'SwipeDown':
             case 'ArrowDown':
                 this.nextDirection = [0,1];
                 break;
             default:
                 // Don't change anything
+                eventCaptured=false;
                 break;
+        }
+        if (eventCaptured) {
+            event.preventDefault();
         }
     }
 
