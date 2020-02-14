@@ -1,0 +1,8 @@
+@media (orientation: portrait) {
+    .wrapper {
+        width: 100%;
+    }
+    .game {
+        width: calc((28 * 70vh / 31));
+    }
+}

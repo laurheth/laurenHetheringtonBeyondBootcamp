@@ -12,13 +12,13 @@
 
 @keyframes munch {
     0% {
-        clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 0 100%, 0 0%, 100% 0%, 100% 0);
+        clip-path: polygon(50% 50%, 150% 150%, 150% 150%, -50% 150%, -50% -50%, 150% -50%, 150% -50%);
     }
     50% {
-        clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 0 100%, 0 0%, 100% 0%, 100% 50%);
+        clip-path: polygon(50% 50%, 150% 50%, 150% 150%, -50% 150%, -50% -50%, 150% -50%, 150% 50%);
     }
     100% {
-        clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 0 100%, 0 0%, 100% 0%, 100% 0);
+        clip-path: polygon(50% 50%, 150% 150%, 150% 150%, -50% 150%, -50% -50%, 150% -50%, 150% -50%);
     }
 }
 
@@ -106,26 +106,6 @@ $borderRadius: 50%;
             padding: 0;
             margin: 0 calc(50% - #{$halfBorder}) 0 calc(50% - #{$halfBorder});
         }
-    
-        // &.horizontal::after {
-        //     content: '';
-        //     position: absolute;
-        //     left: 0;
-        //     right: 0;
-        //     top: calc(50% - #{$halfBorder});
-        //     bottom: calc(50% - #{$halfBorder});
-        //     background: blue;
-        // }
-    
-        // &.vertical::after {
-        //     content: '';
-        //     position: absolute;
-        //     bottom: 0;
-        //     top: 0;
-        //     left: calc(50% - #{$halfBorder});
-        //     right: calc(50% - #{$halfBorder});
-        //     background: blue;
-        // }
     }
     &.door {
         position: relative;
@@ -145,8 +125,8 @@ $borderRadius: 50%;
     display: grid;
     position: relative;
     grid-template-columns: repeat(28, 1fr);
-    height: 80vh;
-    width: calc((28 * 80vh / 31));
+    width: calc((28 * 70vh / 31));
+    max-width: calc(100vw - 2rem);
     margin: 0 auto;
     .messages {
         position: absolute;
@@ -168,8 +148,8 @@ $borderRadius: 50%;
     }
 }
 
-$eyeSize: 2px;
-$minEyeSize: 0.5px;
+$eyeSize: 0.4vmin;
+$minEyeSize: 0.1vmin;
 $legHeight: 20%;
 $legStep: 100% / 5;
 
@@ -190,7 +170,7 @@ $legStep: 100% / 5;
     &.player {
         background: yellow;
         border-radius: 50%;
-        clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 0 100%, 0 0%, 100% 0%, 100% 0);
+        clip-path: polygon(50% 50%, 150% 150%, 150% 150%, -50% 150%, -50% -50%, 150% -50%, 150% -50%);
         &.moving {
             animation: munch 0.3s linear infinite;
         }
@@ -223,25 +203,25 @@ $legStep: 100% / 5;
 
         &.movingRight{
             &::before, &::after {
-                border-width: $eyeSize $minEyeSize $eyeSize (2*$eyeSize - $minEyeSize);
+                border-width: $eyeSize $minEyeSize $eyeSize calc(2*#{$eyeSize} - #{$minEyeSize});
             }
         }
 
         &.movingLeft{
             &::before, &::after {
-                border-width: $eyeSize (2*$eyeSize - $minEyeSize) $eyeSize $minEyeSize;
+                border-width: $eyeSize calc(2*#{$eyeSize} - #{$minEyeSize}) $eyeSize $minEyeSize;
             }
         }
 
         &.movingUp{
             &::before, &::after {
-                border-width: $minEyeSize $eyeSize (2*$eyeSize - $minEyeSize) $eyeSize;
+                border-width: $minEyeSize $eyeSize calc(2*#{$eyeSize} - #{$minEyeSize}) $eyeSize;
             }
         }
 
         &.movingDown{
             &::before, &::after {
-                border-width: (2*$eyeSize - $minEyeSize) $eyeSize $minEyeSize $eyeSize;
+                border-width: calc(2*#{$eyeSize} - #{$minEyeSize}) $eyeSize $minEyeSize $eyeSize;
             }
         }
 
@@ -281,4 +261,5 @@ $legStep: 100% / 5;
 .fruit {
     position: absolute;
     transform: translateX(-50%) translateY(-50%);
+    font-size: calc(1rem  + 1vmin);
 }

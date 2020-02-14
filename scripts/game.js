@@ -15,7 +15,9 @@ const game = {
     pacLauren: null,
     paused: false,
     score: 0,
+    highScore: 0,
     scoreElement: null,
+    highScoreElement: null,
     lives: 2,
     livesElement: null,
     fruitThresholds: [],
@@ -65,6 +67,11 @@ const game = {
         // Get the elements for keeping track of score and lives
         this.livesElement = document.getElementById('lives');
         this.scoreElement = document.getElementById('score');
+        this.highScoreElement = document.getElementById('highScore');
+
+        // Initialize score and get the previous high score if it exists
+        this.highScore = this.getHighScore();
+        this.displayHighScore();
         
         // Initialize the current time
         this.currentTime = this.getSeconds();
@@ -104,15 +111,13 @@ const game = {
             this.gamePlan.shift();
             // Scatter mode
             if (this.gamePlan[0][0] === 'scatter') {
-                gameMap.ghostRefs.forEach((ghost)=>{
-                    ghost.reverseDirection();
-                    ghost.scatterMode=true;
-                });
+                gameMap.ghostRefs.forEach(ghost=>ghost.scatterMode=true);
             }
             // Chase mode
             else {
                 gameMap.ghostRefs.forEach(ghost=>ghost.scatterMode=false);
             }
+            gameMap.ghostRefs.forEach(ghost=>ghost.reverseDirection());
         }
 
         // Handle the fruit logic!
@@ -216,10 +221,32 @@ const game = {
         }
         this.score += number;
         this.updateScore();
+        if (this.score > this.highScore) {
+            this.displayHighScore();
+        }
     },
 
     updateScore() {
         this.scoreElement.textContent = Math.floor(Math.max(this.score,0));
+    },
+
+    displayHighScore() {
+        this.highScoreElement.textContent = Math.floor(Math.max(this.score, this.highScore));
+    },
+
+    setHighScore(newHighScore) {
+        window.localStorage.setItem('highScore',newHighScore.toString());
+        this.highScore = newHighScore;
+    },
+
+    getHighScore() {
+        const highScore = parseInt(window.localStorage.getItem('highScore'));
+        if (highScore) {
+            return highScore;
+        }
+        else {
+            return 0;
+        }
     },
     
     getReady() {
@@ -236,6 +263,9 @@ const game = {
     gameOver() {
         document.querySelector('#game .messages p').textContent = "Game over!";
         document.querySelector('#game .messages').classList.remove('hide');
+        if (this.score > this.highScore) {
+            this.setHighScore(this.score);
+        }
     },
 
     commencePlay() {

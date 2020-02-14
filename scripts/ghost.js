@@ -143,7 +143,7 @@ class ghost extends character {
             }
         }
         // If in scatter mode, go to scatter target
-        else if (this.scatterMode) {
+        else if (this.scatterMode && (this.mapReference.foodTotal - this.mapReference.foodEaten > this.elroyMode)) {
             this.targetTile = this.scatterTile;
         }
         // Otherwise, do default, player hunting behavior

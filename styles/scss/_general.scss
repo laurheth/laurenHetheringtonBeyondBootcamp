@@ -6,9 +6,55 @@ body {
     font-size: 1.6rem;
     color: white;
     background: black;
+    font-family: 'Press Start 2P', sans-serif;
 }
 
 .wrapper {
     width: 80%;
+    max-width: 1024px;
     margin: 0 auto;
+    text-align: center;
+}
+
+.container {
+    display: inline-block;
+    max-width: 100%;
+}
+
+h1, h2, p, ul, li {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+    color: yellow;
+}
+
+h1 {
+    margin: 2rem auto;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.scoreContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    text-transform: uppercase;
+    .score {
+        text-align: left;
+    }
+    .highScore {
+        text-align: right;
+    }
+}
+
+footer {
+    text-align: center;
+    font-size: 1.2rem;
+    p {
+        margin: 0 auto;
+    }
 }

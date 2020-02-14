@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap");
 article, aside, details, figcaption, figure, footer, header, hgroup, nav, section, summary {
   display: block;
 }
@@ -188,10 +189,56 @@ body {
   font-size: 1.6rem;
   color: white;
   background: black;
+  font-family: "Press Start 2P", sans-serif;
 }
 
 .wrapper {
   width: 80%;
+  max-width: 1024px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.container {
+  display: inline-block;
+  max-width: 100%;
+}
+
+h1, h2, p, ul, li {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  text-decoration: none;
+  color: yellow;
+}
+
+h1 {
+  margin: 2rem auto;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.scoreContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  text-transform: uppercase;
+}
+.scoreContainer .score {
+  text-align: left;
+}
+.scoreContainer .highScore {
+  text-align: right;
+}
+
+footer {
+  text-align: center;
+  font-size: 1.2rem;
+}
+footer p {
   margin: 0 auto;
 }
 
@@ -208,13 +255,13 @@ body {
 }
 @keyframes munch {
   0% {
-    clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 0 100%, 0 0%, 100% 0%, 100% 0);
+    clip-path: polygon(50% 50%, 150% 150%, 150% 150%, -50% 150%, -50% -50%, 150% -50%, 150% -50%);
   }
   50% {
-    clip-path: polygon(50% 50%, 100% 50%, 100% 100%, 0 100%, 0 0%, 100% 0%, 100% 50%);
+    clip-path: polygon(50% 50%, 150% 50%, 150% 150%, -50% 150%, -50% -50%, 150% -50%, 150% 50%);
   }
   100% {
-    clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 0 100%, 0 0%, 100% 0%, 100% 0);
+    clip-path: polygon(50% 50%, 150% 150%, 150% 150%, -50% 150%, -50% -50%, 150% -50%, 150% -50%);
   }
 }
 .tile {
@@ -307,8 +354,8 @@ body {
   display: grid;
   position: relative;
   grid-template-columns: repeat(28, 1fr);
-  height: 80vh;
-  width: calc((28 * 80vh / 31));
+  width: calc((28 * 70vh / 31));
+  max-width: calc(100vw - 2rem);
   margin: 0 auto;
 }
 .game .messages {
@@ -347,7 +394,7 @@ body {
 .character.player {
   background: yellow;
   border-radius: 50%;
-  clip-path: polygon(50% 50%, 100% 100%, 100% 100%, 0 100%, 0 0%, 100% 0%, 100% 0);
+  clip-path: polygon(50% 50%, 150% 150%, 150% 150%, -50% 150%, -50% -50%, 150% -50%, 150% -50%);
 }
 .character.player.moving {
   animation: munch 0.3s linear infinite;
@@ -375,20 +422,20 @@ body {
   height: 15%;
   background: black;
   border: white solid;
-  border-width: 2px;
+  border-width: 0.4vmin;
   border-radius: 50%;
 }
 .character.redGhost.movingRight::before, .character.redGhost.movingRight::after, .character.orangeGhost.movingRight::before, .character.orangeGhost.movingRight::after, .character.blueGhost.movingRight::before, .character.blueGhost.movingRight::after, .character.pinkGhost.movingRight::before, .character.pinkGhost.movingRight::after {
-  border-width: 2px 0.5px 2px 3.5px;
+  border-width: 0.4vmin 0.1vmin 0.4vmin calc(2*0.4vmin - 0.1vmin);
 }
 .character.redGhost.movingLeft::before, .character.redGhost.movingLeft::after, .character.orangeGhost.movingLeft::before, .character.orangeGhost.movingLeft::after, .character.blueGhost.movingLeft::before, .character.blueGhost.movingLeft::after, .character.pinkGhost.movingLeft::before, .character.pinkGhost.movingLeft::after {
-  border-width: 2px 3.5px 2px 0.5px;
+  border-width: 0.4vmin calc(2*0.4vmin - 0.1vmin) 0.4vmin 0.1vmin;
 }
 .character.redGhost.movingUp::before, .character.redGhost.movingUp::after, .character.orangeGhost.movingUp::before, .character.orangeGhost.movingUp::after, .character.blueGhost.movingUp::before, .character.blueGhost.movingUp::after, .character.pinkGhost.movingUp::before, .character.pinkGhost.movingUp::after {
-  border-width: 0.5px 2px 3.5px 2px;
+  border-width: 0.1vmin 0.4vmin calc(2*0.4vmin - 0.1vmin) 0.4vmin;
 }
 .character.redGhost.movingDown::before, .character.redGhost.movingDown::after, .character.orangeGhost.movingDown::before, .character.orangeGhost.movingDown::after, .character.blueGhost.movingDown::before, .character.blueGhost.movingDown::after, .character.pinkGhost.movingDown::before, .character.pinkGhost.movingDown::after {
-  border-width: 3.5px 2px 0.5px 2px;
+  border-width: calc(2*0.4vmin - 0.1vmin) 0.4vmin 0.1vmin 0.4vmin;
 }
 .character.redGhost::after, .character.orangeGhost::after, .character.blueGhost::after, .character.pinkGhost::after {
   top: 20%;
@@ -424,4 +471,15 @@ body {
 .fruit {
   position: absolute;
   transform: translateX(-50%) translateY(-50%);
+  font-size: calc(1rem + 1vmin);
+}
+
+@media (orientation: portrait) {
+  .wrapper {
+    width: 100%;
+  }
+
+  .game {
+    width: calc((28 * 70vh / 31));
+  }
 }
