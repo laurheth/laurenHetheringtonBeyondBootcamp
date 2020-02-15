@@ -146,9 +146,15 @@ const gameMap = {
         const correctPosition = position.map((coordinate,index) => {
             // the size of the map along the current axis being worried about
             const axisSize = this.dimensions[index];
-            // Weird modulo shenanigans to ensure positive results.
-            // JavaScript modulo gives negative values for negative numbers, which, I have opinions about.
-            return (coordinate % axisSize + axisSize) % axisSize;
+            if (coordinate >= axisSize) {
+                return coordinate - axisSize;
+            }
+            else if (coordinate < 0) {
+                return coordinate + axisSize;
+            }
+            else {
+                return coordinate;
+            }
         });
         return correctPosition;
     },

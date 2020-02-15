@@ -23,6 +23,7 @@ const game = {
     fruitThresholds: [],
     fruitStats: ['🍒',100],
     fruit: null,
+    fruitRecordElement: null,
     touchHandler: null,
     init() {
         // Initialize the game map
@@ -68,6 +69,7 @@ const game = {
         this.livesElement = document.getElementById('lives');
         this.scoreElement = document.getElementById('score');
         this.highScoreElement = document.getElementById('highScore');
+        this.fruitRecordElement = document.getElementById('fruit');
 
         // Initialize score and get the previous high score if it exists
         this.highScore = this.getHighScore();
@@ -75,6 +77,9 @@ const game = {
         
         // Initialize the current time
         this.currentTime = this.getSeconds();
+
+        // Update lives list
+        this.updateLives();
         
         // Start getting ready...
         this.getReady();
@@ -130,6 +135,11 @@ const game = {
             if (this.fruit.incrementTime(timeInterval)) {
                 if (this.fruit.checkFruitCollision([gameMap.playerRef.column, gameMap.playerRef.row])) {
                     this.addToScore(this.fruit.getFruit());
+
+                    if (!this.fruitRecordElement.textContent.includes(this.fruit.symbol)) {
+                        this.fruitRecordElement.textContent = `${this.fruit.symbol}${this.fruitRecordElement.textContent}`;
+                    }
+
                     this.fruit = null;
                 }
             }
@@ -210,7 +220,17 @@ const game = {
     },
 
     updateLives() {
-        this.livesElement.textContent = Math.floor(Math.max(this.lives,0));
+        const toDisplay = Math.floor(Math.max(this.lives,0));
+        // clear child nodes
+        while (this.livesElement.firstChild) {
+            this.livesElement.removeChild(this.livesElement.firstChild);
+        }
+        // Add lives
+        for (let i=0;i<toDisplay;i++) {
+            const lifeSymbol = document.createElement('div');
+            lifeSymbol.classList.add('character','player');
+            this.livesElement.appendChild(lifeSymbol);
+        }
     },
 
     addToScore(number) {

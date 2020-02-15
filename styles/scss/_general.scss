@@ -37,16 +37,16 @@ h1 {
     text-transform: uppercase;
 }
 
-.scoreContainer {
+.infoContainer {
     display: flex;
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-between;
     text-transform: uppercase;
-    .score {
+    .left {
         text-align: left;
     }
-    .highScore {
+    .right {
         text-align: right;
     }
 }

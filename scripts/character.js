@@ -19,28 +19,30 @@ class character {
         // next direction, used to plan ahead and in logic to turn corners bit more smoothly
         this.nextDirection = [0,0];
 
-        // Move to start position
-        this.moveTo(startColumn, startRow);
-
         // Base speed in tiles per second, which will be modified by various speed factors later.
         this.baseSpeed = 10;
-
+        
         // Speed factor, to adjust for various circumstances
         this.speedFactor = 1;
-
+        
         // Set the element size
-        this.element.style.width = `${1.25*this.mapReference.elementWidth()}%`;
-        this.element.style.height = `${1.25*this.mapReference.elementHeight()}%`;
+        this.elementGrowthFactor = 1.25;
+        this.element.style.width = `${this.elementGrowthFactor*this.mapReference.elementWidth()}%`;
+        this.element.style.height = `${this.elementGrowthFactor*this.mapReference.elementHeight()}%`;
+        
+        this.elementPositionFactor = 100 / this.elementGrowthFactor;
+        this.elementOffset = 100 * (this.elementGrowthFactor - 1) / 4
+
+        // Move to start position
+        this.moveTo(startColumn, startRow);
     }
 
     // Method to move a character to a specific location.
     // Note, I'm going by a column-first convention; since it corresponds to X coordinates.
     moveTo(column, row) {
         [this.column, this.row] = this.mapReference.keepOnMap([column, row]);
-
-        const position = this.mapReference.elementPosition(this.column, this.row);
-        this.element.style.left = `${position[0]}%`;
-        this.element.style.top = `${position[1]}%`;
+        
+        this.element.style.transform = `translate(${this.column * this.elementPositionFactor - this.elementOffset}%, ${this.row * this.elementPositionFactor - this.elementOffset}%)`;
 
         // Check if the character has entered a new tile. If so, do some new tile logic
         const newTileIndex = this.mapReference.tileIndex(this.column,this.row);
