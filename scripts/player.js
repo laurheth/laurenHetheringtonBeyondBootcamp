@@ -12,6 +12,8 @@ class player extends character {
         this.addToScore=null;
         this.dieFunction=null;
         this.element.classList.add('player');
+        this.moveQueue = []; // move queue, used for gestures on mobile
+        this.nextQueueDistance=0;
     }
 
     setSpeedFactors(baseSpeed=0.8, powerUpSpeed=0.9, foodSpeed=0.87) {
@@ -97,7 +99,18 @@ class player extends character {
     }
 
     doUpdate(timeInterval) {
+        // Swipe queue logic
+        if (this.nextDirection.some(x=>x)) {
+            this.nextQueueDistance = this.distance + 0.9;
+        }
+        else if (this.moveQueue.length > 0 && this.distance >= this.nextQueueDistance) {
+            this.nextDirection = this.moveQueue.shift();
+        }
+
+        // Generic doUpdate
         super.doUpdate(timeInterval);
+
+        // Handle powerup timers
         if (this.poweredUp) {
             this.poweredUpTimer -= timeInterval;
             if (this.poweredUpTimer <= 0) {
@@ -144,6 +157,20 @@ class player extends character {
         this.currentDirection=[0,0];
     }
 
+    // Empty the move queue
+    clearQueue() {
+        this.nextDirection = [0,0];
+        this.moveQueue = [];
+        this.nextQueueDistance = this.distance;
+    }
+
+    // Add a move to the move queue
+    addToQueue(move) {
+        // If the movequeue is empty, or if the new move is different from the last move in the queue, append it to the queue
+        if (this.moveQueue.length === 0 || this.moveQueue[this.moveQueue.length-1].some((x,i) => x !== move[i])) {
+            this.moveQueue.push(move);
+        }
+    }
 }
 
 export default player;

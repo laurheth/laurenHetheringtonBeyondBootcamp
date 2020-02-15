@@ -62,7 +62,7 @@ const game = {
         document.onkeydown = (event) => gameMap.playerRef.getEvent(event);
 
         // Event listeners for touches
-        this.touchHandler = new touchHandler(gameMap.gameBoard, (event) => gameMap.playerRef.getEvent(event));
+        this.touchHandler = new touchHandler(gameMap.gameBoard, gameMap.playerRef);
 
         
         // Get the elements for keeping track of score and lives

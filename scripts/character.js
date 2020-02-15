@@ -21,6 +21,9 @@ class character {
 
         // Base speed in tiles per second, which will be modified by various speed factors later.
         this.baseSpeed = 10;
+
+        // Keep track of distance. Used for some logic.
+        this.distance=0;
         
         // Speed factor, to adjust for various circumstances
         this.speedFactor = 1;
@@ -70,6 +73,7 @@ class character {
     step(direction,timeInterval,ignoreCollisions=false) {
 
         const stepSize = this.speedFactor * this.baseSpeed * timeInterval;
+        this.distance += stepSize;
         // check if the current position is even valid. If it's not, honestly, just let the step happen, something is fucked up. Let 👏 them 👏 be 👏 free!
         if (ignoreCollisions || !this.mapReference.checkCollision(this.column,this.row)) {
             this.moveTo(this.column + direction[0]*stepSize, this.row + direction[1]*stepSize);

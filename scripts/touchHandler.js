@@ -1,12 +1,10 @@
 class touchHandler {
-    constructor(element, callback) {
-        this.callback = callback;
+    constructor(element, playerRef) {
+        this.playerRef = playerRef;
 
-        this.startPos = null;
-        this.startTime = null;
-        this.endPos = null;
+        this.reset();
 
-        this.minLength = 100; // pixels
+        this.minLength = 20; // pixels
         this.minSpeed = 400; // pixels per second
         this.ratioNeeded = 1.2; // Diagonal swipes are ambiguous! Ratio needed for clarity
 
@@ -19,73 +17,76 @@ class touchHandler {
         event.preventDefault();
 
         this.reset();
+        this.playerRef.clearQueue();
 
         const touch = event.changedTouches[0];
-        this.startPos = [touch.pageX, touch.pageY]; // store where the swipe started
+        this.lastPos = [touch.pageX, touch.pageY]; // store where the swipe started
         this.startTime = (new Date()).getTime();
+
+        console.log('---');
     }
 
     handleMove(event) {
         event.preventDefault();
         const touch = event.changedTouches[0];
-        this.endPos = [touch.pageX, touch.pageY]; // store where the swipe is
+        const newPos = [touch.pageX, touch.pageY]; // store where the swipe is
+
+        this.delta[0] += newPos[0] - this.lastPos[0];
+        this.delta[1] += newPos[1] - this.lastPos[1];
+
+        this.lastPos = newPos;
+
+        if (Math.abs(this.delta[0] / this.delta[1]) > this.ratioNeeded && Math.abs(this.delta[0]) > this.minLength) {
+            if (this.delta[0] > 0) {
+                this.sendSwipe('swipeRight');
+            }
+            else {
+                this.sendSwipe('swipeLeft');
+            }
+        }
+        else if (Math.abs(this.delta[1] / this.delta[0]) > this.ratioNeeded && Math.abs(this.delta[1]) > this.minLength) {
+            if (this.delta[1] > 0) {
+                this.sendSwipe('swipeDown');
+            }
+            else {
+                this.sendSwipe('swipeUp');
+            }
+        }
     }
 
     handleEnd(event) {
         event.preventDefault();
-        // Only do if we have a start point to reference
-        if (this.startPos && this.startTime && this.endPos) {
-            const startPos = this.startPos;
-            const endPos = this.endPos; // store where the swipe started
-            const swipeVector = [endPos[0] - startPos[0], endPos[1] - startPos[1]];
-            const length = Math.sqrt( (swipeVector[0])**2 + (swipeVector[1])**2 );
-            const duration = (new Date()).getTime() - this.startTime;
-
-            const speed = 1000 * length / duration;
-
-            // Check if the swipe was long enough and fast enough
-            if (length > this.minLength && speed > this.minSpeed) {
-                // Horizontal swipe
-                if (Math.abs(swipeVector[0] / swipeVector[1]) > this.ratioNeeded) {
-                    if (swipeVector[0] > 0) {
-                        this.sendSwipe('SwipeRight');
-                    }
-                    else {
-                        this.sendSwipe('SwipeLeft');
-                    }
-                }
-                // Vertical swipe
-                else if (Math.abs(swipeVector[1] / swipeVector[0]) > this.ratioNeeded) {
-                    if (swipeVector[1] > 0) {
-                        this.sendSwipe('SwipeDown');
-                    }
-                    else {
-                        this.sendSwipe('SwipeUp');
-                    }
-                }
-            }
-        }
-
-        this.reset();
     }
 
     reset() {
         // Reset numbers
-        this.startPos = null;
+        this.lastPos = null;
         this.startTime = null;
-        this.endPos = null;
+        this.delta = [0,0];
     }
 
     // Easiest way seems to me to just build a custom event object and send it the same place keys go (stored in callback)
     sendSwipe(swipeString) {
-        const event = {
-            preventDefault: () => null,
-            key: swipeString
+        // console.log(swipeString);
+        this.delta = [0,0];
+        const newMove = [0,0];
+        switch(swipeString) {
+            default:
+                break;
+            case 'swipeLeft':
+                newMove[0] = -1;
+                break;
+            case 'swipeRight':
+                newMove[0] = 1;
+                break;
+            case 'swipeUp':
+                newMove[1] = -1;
+                break;
+            case 'swipeDown':
+                newMove[1] = 1;
+                break;
         }
-
-        if (this.callback) {
-            this.callback(event);
-        }
+        this.playerRef.addToQueue(newMove);
     }
 }
 
