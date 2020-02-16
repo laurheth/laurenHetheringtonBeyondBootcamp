@@ -24,15 +24,13 @@
 
 $halfBorder: 1.5px;
 $borderRadius: 50%;
-// $cornerCalc: ;
-
 
 .tile {
     width: 100%;
     padding-bottom: 100%;
     background: black;
+    position: relative;
     &.food {
-        position: relative;
         &::before {
             content:'';
             background: white;
@@ -45,7 +43,6 @@ $borderRadius: 50%;
         }
     }
     &.power {
-        position: relative;
         &::before {
             content:'';
             background: white;
@@ -58,8 +55,6 @@ $borderRadius: 50%;
         }
     }
     &.wall {
-        position: relative;
-
         &.topLeftCorner, &.topRightCorner, &.bottomLeftCorner, &.bottomRightCorner {
             width: calc(50% + #{$halfBorder});
             padding-bottom: calc(50% - #{$halfBorder});
@@ -108,7 +103,6 @@ $borderRadius: 50%;
         }
     }
     &.door {
-        position: relative;
         &::after {
             content: '';
             position: absolute;

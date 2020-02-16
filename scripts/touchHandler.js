@@ -22,8 +22,6 @@ class touchHandler {
         const touch = event.changedTouches[0];
         this.lastPos = [touch.pageX, touch.pageY]; // store where the swipe started
         this.startTime = (new Date()).getTime();
-
-        console.log('---');
     }
 
     handleMove(event) {

@@ -268,8 +268,6 @@ footer p {
   width: 100%;
   padding-bottom: 100%;
   background: black;
-}
-.tile.food {
   position: relative;
 }
 .tile.food::before {
@@ -282,9 +280,6 @@ footer p {
   top: calc(50% - 25% / 2);
   left: calc(50% - 25% / 2);
 }
-.tile.power {
-  position: relative;
-}
 .tile.power::before {
   content: "";
   background: white;
@@ -294,9 +289,6 @@ footer p {
   border-radius: 50%;
   top: calc(50% - 60% / 2);
   left: calc(50% - 60% / 2);
-}
-.tile.wall {
-  position: relative;
 }
 .tile.wall.topLeftCorner, .tile.wall.topRightCorner, .tile.wall.bottomLeftCorner, .tile.wall.bottomRightCorner {
   width: calc(50% + 1.5px);
@@ -336,9 +328,6 @@ footer p {
   width: 3px;
   padding: 0;
   margin: 0 calc(50% - 1.5px) 0 calc(50% - 1.5px);
-}
-.tile.door {
-  position: relative;
 }
 .tile.door::after {
   content: "";

@@ -6,7 +6,7 @@ import fruit from './fruit.js';
 import touchHandler from './touchHandler.js';
 
 const game = {
-    targetTimeInterval: 1/60, // Target time interval, but in practice, is not to level of precision we need.
+    targetTimeInterval: 1/30, // Target time interval, but in practice, is not to level of precision we need.
     timePassed: 0,
     currentTime: 0,
     gamePlan: ['chase', Infinity],
