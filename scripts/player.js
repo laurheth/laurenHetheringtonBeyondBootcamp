@@ -133,7 +133,7 @@ class player extends character {
                 if (ghost.afraid || ghost.captured) {
                     if (!ghost.captured) {
                         if (this.addToScore) {
-                            this.addToScore(this.captureGhostPointValue);
+                            this.addToScore(this.captureGhostPointValue, ghost.column, ghost.row);
                         }
                         this.captureGhostPointValue*=2;
                         ghost.capture();

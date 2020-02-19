@@ -44,8 +44,6 @@ class character {
     // Note, I'm going by a column-first convention; since it corresponds to X coordinates.
     moveTo(column, row) {
         [this.column, this.row] = this.mapReference.keepOnMap([column, row]);
-        
-        this.element.style.transform = `translate(${this.column * this.elementPositionFactor - this.elementOffset}%, ${this.row * this.elementPositionFactor - this.elementOffset}%)`;
 
         // Check if the character has entered a new tile. If so, do some new tile logic
         const newTileIndex = this.mapReference.tileIndex(this.column,this.row);
@@ -53,6 +51,11 @@ class character {
             this.tileIndex = newTileIndex;
             this.newTile();
         }
+    }
+
+    // Update element position
+    updateElement() {
+        this.element.style.transform = `translate(${this.column * this.elementPositionFactor - this.elementOffset}%, ${this.row * this.elementPositionFactor - this.elementOffset}%)`;
     }
 
     // Code to run every time a character enters a new tile

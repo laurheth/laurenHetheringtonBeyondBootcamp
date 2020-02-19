@@ -6,7 +6,7 @@ import fruit from './fruit.js';
 import touchHandler from './touchHandler.js';
 
 const game = {
-    targetTimeInterval: 1/30, // Target time interval, but in practice, is not to level of precision we need.
+    targetTimeInterval: 1/60, // Target time interval, but in practice, is not to level of precision we need.
     timePassed: 0,
     currentTime: 0,
     gamePlan: ['chase', Infinity],
@@ -34,7 +34,7 @@ const game = {
         
         // Store a reference for the player
         gameMap.playerRef = this.pacLauren;
-        gameMap.playerRef.addToScore = (number) => this.addToScore(number);
+        gameMap.playerRef.addToScore = (number, column, rows) => this.addToScore(number, column, rows);
         gameMap.playerRef.dieFunction = () => this.playerCaptured();
 
         
@@ -85,7 +85,17 @@ const game = {
         this.getReady();
 
         // Setup the main game loop
+        // This loop needs a hight frequency in order to avoid walking through walls, etc.
         this.gameLoop = setInterval(() => this.mainGameLoop(), 1000 * this.targetTimeInterval);
+
+        // This loop can have a lower frequency. It's appearance, which matters, but it is also more expensive than any of the game logic. Lower frequency to make life better on mobile devices.
+        setInterval(()=>this.graphicsLoop(),2000 * this.targetTimeInterval);
+    },
+
+    // Graphics loop, can be a bit slower than main game loop
+    graphicsLoop() {
+        this.pacLauren.updateElement();
+        gameMap.ghostRefs.forEach((ghost)=>ghost.updateElement());
     },
 
     // Function that runs every frame of the game
@@ -134,7 +144,7 @@ const game = {
             // returns true if the fruit hasn't timed out, false otherwise
             if (this.fruit.incrementTime(timeInterval)) {
                 if (this.fruit.checkFruitCollision([gameMap.playerRef.column, gameMap.playerRef.row])) {
-                    this.addToScore(this.fruit.getFruit());
+                    this.addToScore(this.fruit.getFruit(), this.fruit.column, this.fruit.row);
 
                     if (!this.fruitRecordElement.textContent.includes(this.fruit.symbol)) {
                         this.fruitRecordElement.textContent = `${this.fruit.symbol}${this.fruitRecordElement.textContent}`;
@@ -233,7 +243,7 @@ const game = {
         }
     },
 
-    addToScore(number) {
+    addToScore(number, column=null, row=null) {
         const newScore = this.score + number;
         if ((this.score % 10000) > (newScore % 10000) ) {
             // extra life!
@@ -241,6 +251,10 @@ const game = {
         }
         this.score += number;
         this.updateScore();
+        // If a position is given, display the point value gained at that location
+        if (column && row) {
+            gameMap.displayPoints(column, row, number);
+        }
         if (this.score > this.highScore) {
             this.displayHighScore();
         }
@@ -277,6 +291,7 @@ const game = {
             this.fruit.removeFruit();
             this.fruit=null;
         }
+        gameMap.clearPoints();
         setTimeout(()=>this.commencePlay(),5000);
     },
 

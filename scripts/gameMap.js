@@ -210,6 +210,24 @@ const gameMap = {
 
     elementHeight() {
         return 100 / this.dimensions[1];
+    },
+
+    // Draws a point value on the board for when you collect a fruit, or eat a ghost
+    displayPoints(column, row, message) {
+        const [left, top] = this.elementPosition(column,row);
+        const newElement = document.createElement('div');
+        newElement.classList.add('pointGain');
+        newElement.textContent = message;
+        newElement.style.left = `${left}%`;
+        newElement.style.top = `${top}%`;
+        this.gameBoard.appendChild(newElement);
+    },
+
+    clearPoints() {
+        const pointDisplays = document.querySelectorAll('.pointGain');
+        pointDisplays.forEach(element => {
+            element.remove();
+        })
     }
 }
 

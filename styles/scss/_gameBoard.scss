@@ -22,6 +22,22 @@
     }
 }
 
+@keyframes fade {
+    0% {
+        opacity: 1;
+    }
+    75% {
+        opacity: 1;
+    }
+    99% {
+        opacity: 0;
+    }
+    100% {
+        display: none;
+        opacity: 0;
+    }
+}
+
 $halfBorder: 1.5px;
 $borderRadius: 50%;
 
@@ -265,6 +281,14 @@ $legStep: 100% / 5;
     position: absolute;
     transform: translateX(-50%) translateY(-50%);
     font-size: calc(1rem  + 1vmin);
+}
+
+.pointGain {
+    position: absolute;
+    transform: translateX(-50%) translateY(-50%);
+    color: cyan;
+    animation: fade linear 4s both;
+    font-size: 0.8rem;
 }
 
 .lives .player {
