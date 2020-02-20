@@ -43,6 +43,11 @@ class character {
     // Method to move a character to a specific location.
     // Note, I'm going by a column-first convention; since it corresponds to X coordinates.
     moveTo(column, row) {
+        if (!isFinite(column) || !isFinite(row)) {
+            // Something went wrong! Stay put, do not go to a fake and illegal location
+            column = this.column;
+            row = this.row;
+        }
         [this.column, this.row] = this.mapReference.keepOnMap([column, row]);
 
         // Check if the character has entered a new tile. If so, do some new tile logic
