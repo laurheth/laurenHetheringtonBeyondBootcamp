@@ -49,6 +49,9 @@ h1 {
     .right {
         text-align: right;
     }
+    &.bottomInfo {
+        min-height: 2rem;
+    }
 }
 
 footer {

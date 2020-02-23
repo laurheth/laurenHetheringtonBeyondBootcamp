@@ -25,6 +25,8 @@ const game = {
     fruit: null,
     fruitRecordElement: null,
     touchHandler: null,
+    readyMessageElement: null,
+    gameOverMessageElement: null,
     init() {
         // Initialize the game map
         gameMap.init();
@@ -70,6 +72,16 @@ const game = {
         this.scoreElement = document.getElementById('score');
         this.highScoreElement = document.getElementById('highScore');
         this.fruitRecordElement = document.getElementById('fruit');
+
+        // Restart button
+        document.getElementById('restartButton').addEventListener('click',(event)=>{
+            event.preventDefault();
+            this.restart();
+        });
+
+        // Message elements
+        this.readyMessageElement = document.getElementById('readyMessage');
+        this.gameOverMessageElement = document.getElementById('gameOverMessage');
 
         // Initialize score and get the previous high score if it exists
         this.highScore = this.getHighScore();
@@ -146,9 +158,7 @@ const game = {
                 if (this.fruit.checkFruitCollision([gameMap.playerRef.column, gameMap.playerRef.row])) {
                     this.addToScore(this.fruit.getFruit(), this.fruit.column, this.fruit.row);
 
-                    if (!this.fruitRecordElement.textContent.includes(this.fruit.symbol)) {
-                        this.fruitRecordElement.textContent = `${this.fruit.symbol}${this.fruitRecordElement.textContent}`;
-                    }
+                    this.addToFruitRecord(this.fruit);
 
                     this.fruit = null;
                 }
@@ -168,16 +178,26 @@ const game = {
         }
     },
 
+    // Add a fruit to the fruit display
+    addToFruitRecord(fruit) {
+        if (!this.fruitRecordElement.textContent.includes(fruit.symbol)) {
+            this.fruitRecordElement.textContent = `${fruit.symbol}${this.fruitRecordElement.textContent}`;
+        }
+    },
+
+    // Clear the fruit display, run on game restart
+    resetFruitRecord() {
+        this.fruitRecordElement.textContent = '';
+    },
+
     // Code to run to prepare the next level
     nextLevel() {
         gameMap.foodEaten=0;
         this.level++;
-        // this.setLevelProperties();
-        // gameMap.playerRef.reset();
-        // this.timePassed=0;
+
         this.resetFruitThreshold();
         gameMap.loadMap();
-        // this.getReady();
+
         this.newLife();
     },
 
@@ -186,7 +206,11 @@ const game = {
     restart() {
         this.level = 0;
         this.score=0;
+        this.updateScore();
         this.lives = 2;
+        this.updateLives();
+        this.resetFruitRecord();
+        this.gameOverMessageElement.classList.add('hide');
         this.nextLevel();
     },
 
@@ -285,8 +309,7 @@ const game = {
     
     getReady() {
         this.pauseGame();
-        document.querySelector('#game .messages p').textContent = "Ready!";
-        document.querySelector('#game .messages').classList.remove('hide');
+        this.readyMessageElement.classList.remove('hide');
         if (this.fruit) {
             this.fruit.removeFruit();
             this.fruit=null;
@@ -296,8 +319,7 @@ const game = {
     },
 
     gameOver() {
-        document.querySelector('#game .messages p').textContent = "Game over!";
-        document.querySelector('#game .messages').classList.remove('hide');
+        this.gameOverMessageElement.classList.remove('hide');
         if (this.score > this.highScore) {
             this.setHighScore(this.score);
         }
@@ -305,7 +327,7 @@ const game = {
 
     commencePlay() {
         this.pauseGame(false);
-        document.querySelector('#game .messages').classList.add('hide');
+        this.readyMessageElement.classList.add('hide');
     },
 
     victory() {

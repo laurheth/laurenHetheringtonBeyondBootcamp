@@ -233,6 +233,9 @@ h1 {
 .infoContainer .right {
   text-align: right;
 }
+.infoContainer.bottomInfo {
+  min-height: 2rem;
+}
 
 footer {
   text-align: center;
