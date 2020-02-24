@@ -1,0 +1,60 @@
+// Animations
+
+@keyframes flash {
+    0% {
+        background: white;
+    }
+    50% {
+        background: blue;
+    }
+    100% {
+        background: white;
+    }
+}
+
+@keyframes munch {
+    0% {
+        clip-path: polygon(50% 50%, 150% 150%, 150% 150%, -50% 150%, -50% -50%, 150% -50%, 150% -50%);
+    }
+    50% {
+        clip-path: polygon(50% 50%, 150% 50%, 150% 150%, -50% 150%, -50% -50%, 150% -50%, 150% 50%);
+    }
+    100% {
+        clip-path: polygon(50% 50%, 150% 150%, 150% 150%, -50% 150%, -50% -50%, 150% -50%, 150% -50%);
+    }
+}
+
+@keyframes fade {
+    0% {
+        opacity: 1;
+    }
+    75% {
+        opacity: 1;
+    }
+    99% {
+        opacity: 0;
+    }
+    100% {
+        display: none;
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+
+@keyframes ghostWalk {
+    0% {
+        clip-path: polygon(100% 0, 0 0, 0 (100%-$legHeight), 0 100%, $legStep (100%-$legHeight), 2*$legStep 100%, 3*$legStep (100%-$legHeight), 4*$legStep 100%, 5*$legStep (100%-$legHeight), 5*$legStep (100%-$legHeight));
+    }
+    100% {
+        clip-path: polygon(100% 0, 0 0, 0 (100%-$legHeight), 0 (100%-$legHeight), $legStep 100%, 2*$legStep (100%-$legHeight), 3*$legStep 100%, 4*$legStep (100%-$legHeight), 5*$legStep 100%, 5*$legStep (100%-$legHeight));
+    }
+}

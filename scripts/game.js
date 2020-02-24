@@ -405,7 +405,11 @@ const game = {
         // Ghost time in the ghost house
         gameMap.ghostRefs[0].danceMovesToGo=-1;
         gameMap.ghostRefs[1].freeFromHouseThreshold=0;
-        if (this.level >= 2) {
+        if (this.level < 2) {
+            gameMap.ghostRefs[2].freeFromHouseThreshold=30;
+            gameMap.ghostRefs[3].freeFromHouseThreshold=gameMap.foodTotal / 3;
+        }
+        else if (this.level >= 2) {
             gameMap.ghostRefs[2].danceMovesToGo=12;
             gameMap.ghostRefs[2].freeFromHouseThreshold=0;
             gameMap.ghostRefs[3].freeFromHouseThreshold=50;

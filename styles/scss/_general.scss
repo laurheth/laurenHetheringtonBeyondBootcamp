@@ -29,6 +29,10 @@ h1, h2, p, ul, li {
 a {
     text-decoration: none;
     color: yellow;
+    transition: 0.3s;
+    &:hover, &:focus {
+        color: red;
+    }
 }
 
 h1 {
