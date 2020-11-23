@@ -1,4 +1,4 @@
-# laurenHetheringtonBeyondBootcamp
+# PAC-LAUREN
 
 A recreation of the classic PAC-MAN game! Eat the pellets, run from ghosts, and sometimes eat the ghosts too.
 
